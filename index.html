@@ -1,0 +1,2059 @@
+<!doctype html>
+<html lang="id" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Presensi Digital - Graha Mega Solusindo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    .gradient-primary {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    }
+    .gradient-success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    .gradient-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+    .gradient-warning {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+    .card-shadow {
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(30, 41, 59, 0.6);
+    }
+    .btn-danger {
+      background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+      transition: all 0.3s ease;
+    }
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(220, 38, 38, 0.6);
+    }
+    .btn-secondary {
+      background: linear-gradient(135deg, #475569 0%, #334155 100%);
+      transition: all 0.3s ease;
+    }
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(71, 85, 105, 0.6);
+    }
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 0.8s ease-in-out infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .marquee-container {
+      overflow: hidden;
+      background: linear-gradient(90deg, #fef3c7 0%, #fde68a 100%);
+      padding: 12px 0;
+      border-bottom: 3px solid #f59e0b;
+    }
+    .marquee-text {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marquee 25s linear infinite;
+      white-space: nowrap;
+      font-weight: 600;
+      color: #92400e;
+    }
+    @keyframes marquee {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(-100%, 0); }
+    }
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 16px 24px;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      z-index: 9999;
+      animation: slideIn 0.3s ease;
+      max-width: 350px;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9998;
+      animation: fadeIn 0.2s ease;
+      padding: 20px;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 90%;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status-hadir { background: #d1fae5; color: #065f46; }
+    .status-pulang { background: #dbeafe; color: #1e40af; }
+    .status-pending { background: #fef3c7; color: #92400e; }
+    .status-approved { background: #d1fae5; color: #065f46; }
+    .status-rejected { background: #fee2e2; color: #991b1b; }
+    .camera-preview {
+      width: 100%;
+      max-width: 400px;
+      height: 300px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 48px;
+      margin: 0 auto;
+    }
+    .nav-btn {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .nav-btn:hover {
+      transform: scale(1.05);
+    }
+    .nav-btn.active {
+      background: rgba(255,255,255,0.2);
+      border-radius: 8px;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full">
+  <div id="app" class="h-full w-full overflow-auto"></div>
+  <script>
+    console.log('🚀 App initializing with FULL FEATURES + WhatsApp Integration...');
+    
+    // ============================================
+    // GLOBAL STATE
+    // ============================================
+    let currentUser = null;
+    let allData = [];
+    let currentView = 'login';
+    let isLoggingIn = false;
+    let currentPage = 'dashboard';
+    let currentModal = null;
+
+    const defaultConfig = {
+      company_name: "Graha Mega Solusindo",
+      app_subtitle: "Sistem Presensi Digital",
+      welcome_text: "Selamat Datang",
+      footer_text: "Supported by: Klase Auto Graha",
+      marquee_text: "⚠️ Jangan lupa absen tepat waktu! • Patuhi aturan perusahaan dan disiplin dalam bekerja • Absen maksimal 08:00 WIB • Hubungi admin jika ada kendala"
+    };
+
+    // ============================================
+    // UTILITY FUNCTIONS
+    // ============================================
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.style.background = type === 'success' ? '#d1fae5' : type === 'error' ? '#fee2e2' : '#fef3c7';
+      toast.style.color = type === 'success' ? '#065f46' : type === 'error' ? '#991b1b' : '#92400e';
+      toast.style.borderLeft = `4px solid ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#f59e0b'}`;
+      toast.innerHTML = `<strong>${type === 'success' ? '✅' : type === 'error' ? '❌' : '⚠️'}</strong> ${message}`;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'slideIn 0.3s ease reverse';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    function generateToken() {
+      return `token-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    }
+
+    function formatDate(isoString) {
+      const date = new Date(isoString);
+      const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+      return `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+    }
+
+    function formatTime(isoString) {
+      const date = new Date(isoString);
+      return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371000; // Earth radius in meters
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
+    }
+
+    // ============================================
+    // DATA HELPERS
+    // ============================================
+    function getUsers() {
+      return allData.filter(d => d.type === 'user');
+    }
+
+    function getSessions() {
+      return allData.filter(d => d.type === 'session');
+    }
+
+    function getAttendance() {
+      return allData.filter(d => d.type === 'attendance');
+    }
+
+    function getLeaveRequests() {
+      return allData.filter(d => d.type === 'leave');
+    }
+
+    function getTodayAttendance(employeeId) {
+      const today = new Date().toISOString().split('T')[0];
+      return getAttendance().filter(a => 
+        a.employee_id === employeeId && 
+        a.check_time && 
+        a.check_time.startsWith(today)
+      );
+    }
+
+    function hasCheckedInToday(employeeId) {
+      return getTodayAttendance(employeeId).some(a => a.attendance_type === 'masuk');
+    }
+
+    function hasCheckedOutToday(employeeId) {
+      return getTodayAttendance(employeeId).some(a => a.attendance_type === 'pulang');
+    }
+
+    // ============================================
+    // DATA SDK HANDLER
+    // ============================================
+    const dataHandler = {
+      onDataChanged(data) {
+        console.log('📊 Data updated:', data.length, 'records');
+        allData = data;
+        
+        // Re-render current view if needed
+        if (currentView !== 'login' && currentUser) {
+          if (currentPage === 'employees' || currentPage === 'attendance' || currentPage === 'leave' || currentPage === 'settings') {
+            renderDashboard();
+          }
+        }
+        
+        // Check auto-login
+        if (currentView === 'login' && !currentUser && !isLoggingIn) {
+          checkAutoLogin();
+        }
+      }
+    };
+
+    // ============================================
+    // AUTH FUNCTIONS
+    // ============================================
+    async function checkAutoLogin() {
+      const sessions = getSessions();
+      const activeSession = sessions.find(s => s.session_token && s.employee_id);
+      
+      if (activeSession) {
+        const user = getUsers().find(u => u.employee_id === activeSession.employee_id);
+        if (user) {
+          console.log('✅ Auto-login found for:', user.nama);
+          currentUser = user;
+          currentView = 'dashboard';
+          showToast(`Selamat datang kembali, ${user.nama}!`, 'success');
+          renderDashboard();
+        }
+      }
+    }
+
+    async function createSession(employeeId) {
+      if (allData.length >= 999) return;
+      
+      const sessionData = {
+        type: 'session',
+        employee_id: employeeId,
+        session_token: generateToken(),
+        last_login: new Date().toISOString()
+      };
+
+      const result = await window.dataSdk.create(sessionData);
+      return result.isOk;
+    }
+
+    async function handleLogout() {
+      console.log('🚪 Logging out...');
+      const sessions = getSessions().filter(s => s.employee_id === currentUser.employee_id);
+      
+      for (const session of sessions) {
+        if (session.__backendId) {
+          await window.dataSdk.delete(session);
+        }
+      }
+
+      currentUser = null;
+      currentView = 'login';
+      currentPage = 'dashboard';
+      showToast('Anda telah logout', 'success');
+      renderLogin();
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      
+      if (isLoggingIn) return;
+      
+      if (allData.length >= 999) {
+        showToast('Database penuh! Hubungi administrator.', 'error');
+        return;
+      }
+
+      const nama = document.getElementById('loginNama').value.trim();
+      const employeeId = document.getElementById('loginId').value.trim();
+
+      if (!nama || !employeeId) {
+        showToast('Mohon isi Nama Lengkap dan ID Karyawan', 'error');
+        return;
+      }
+
+      isLoggingIn = true;
+      const submitBtn = document.querySelector('#loginForm button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<span class="loading-spinner"></span>';
+      submitBtn.disabled = true;
+
+      try {
+        if (!window.dataSdk) {
+          throw new Error('Data SDK not available');
+        }
+
+        // Check super admin Rio
+        if (nama.toLowerCase() === 'rio' && employeeId === '777') {
+          const users = getUsers();
+          const superAdmin = users.find(u => u.employee_id === '777');
+          
+          if (!superAdmin) {
+            const adminData = {
+              type: 'user',
+              employee_id: '777',
+              nama: 'Rio',
+              lokasi_kerja: 'Head Office',
+              no_hp: '-',
+              role: 'admin',
+              gps_mode: 'bebas',
+              latitude: '0',
+              longitude: '0',
+              radius: 0
+            };
+
+            const result = await window.dataSdk.create(adminData);
+            
+            if (result.isOk) {
+              currentUser = adminData;
+              await createSession(adminData.employee_id);
+              currentView = 'dashboard';
+              showToast('Selamat datang Super Admin Rio! 👑', 'success');
+              setTimeout(() => renderDashboard(), 500);
+            } else {
+              showToast('Gagal membuat super admin', 'error');
+            }
+          } else {
+            currentUser = superAdmin;
+            await createSession(superAdmin.employee_id);
+            currentView = 'dashboard';
+            showToast('Selamat datang kembali Super Admin Rio! 👑', 'success');
+            setTimeout(() => renderDashboard(), 500);
+          }
+        } 
+        // Check admin GMS
+        else if (nama.toLowerCase() === 'admin' && employeeId === 'gms123#') {
+          const users = getUsers();
+          const gmsAdmin = users.find(u => u.employee_id === 'gms123#');
+          
+          if (!gmsAdmin) {
+            const adminData = {
+              type: 'user',
+              employee_id: 'gms123#',
+              nama: 'Admin',
+              lokasi_kerja: 'Head Office',
+              no_hp: '-',
+              role: 'admin',
+              gps_mode: 'bebas',
+              latitude: '0',
+              longitude: '0',
+              radius: 0
+            };
+
+            const result = await window.dataSdk.create(adminData);
+            
+            if (result.isOk) {
+              currentUser = adminData;
+              await createSession(adminData.employee_id);
+              currentView = 'dashboard';
+              showToast('Selamat datang Admin GMS! 👑', 'success');
+              setTimeout(() => renderDashboard(), 500);
+            } else {
+              showToast('Gagal membuat admin', 'error');
+            }
+          } else {
+            currentUser = gmsAdmin;
+            await createSession(gmsAdmin.employee_id);
+            currentView = 'dashboard';
+            showToast('Selamat datang kembali Admin GMS! 👑', 'success');
+            setTimeout(() => renderDashboard(), 500);
+          }
+        } else {
+          // Regular login
+          const users = getUsers();
+          const user = users.find(u => 
+            u.nama.toLowerCase() === nama.toLowerCase() && 
+            u.employee_id === employeeId
+          );
+          
+          if (user) {
+            currentUser = user;
+            await createSession(user.employee_id);
+            currentView = 'dashboard';
+            showToast(`Selamat datang, ${user.nama}! 🎉`, 'success');
+            setTimeout(() => renderDashboard(), 500);
+          } else {
+            showToast('Nama atau ID Karyawan tidak ditemukan! ❌', 'error');
+          }
+        }
+      } catch (error) {
+        console.error('❌ Login error:', error);
+        showToast('Terjadi kesalahan: ' + error.message, 'error');
+      }
+
+      isLoggingIn = false;
+      submitBtn.innerHTML = originalText;
+      submitBtn.disabled = false;
+    }
+
+    // ============================================
+    // ATTENDANCE FUNCTIONS
+    // ============================================
+    function getCurrentLocation() {
+      return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          reject(new Error('Geolocation tidak didukung'));
+          return;
+        }
+        
+        navigator.geolocation.getCurrentPosition(
+          position => resolve({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          }),
+          error => reject(error),
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+      });
+    }
+
+    async function handleCheckIn() {
+      if (allData.length >= 999) {
+        showToast('Database penuh! Hubungi administrator.', 'error');
+        return;
+      }
+
+      if (hasCheckedInToday(currentUser.employee_id)) {
+        showToast('Anda sudah absen masuk hari ini!', 'warning');
+        return;
+      }
+
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `
+        <div class="modal-content p-6">
+          <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">📸 Absen Masuk</h3>
+          
+          <div class="camera-preview mb-4">
+            😊
+          </div>
+          
+          <p class="text-center text-sm text-gray-600 mb-4">Foto selfie (mode dummy)</p>
+          
+          <div id="gpsStatus" class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p class="text-sm text-yellow-800">📍 Mengambil lokasi GPS...</p>
+          </div>
+          
+          <div class="flex gap-3">
+            <button onclick="closeModal()" class="flex-1 px-4 py-3 bg-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-400 transition">
+              Batal
+            </button>
+            <button id="confirmCheckIn" class="flex-1 px-4 py-3 btn-primary text-white rounded-lg font-semibold" disabled>
+              <span class="loading-spinner"></span>
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      currentModal = modal;
+
+      // Get GPS location
+      try {
+        const location = await getCurrentLocation();
+        const gpsStatus = document.getElementById('gpsStatus');
+        const confirmBtn = document.getElementById('confirmCheckIn');
+        
+        if (currentUser.gps_mode === 'terkunci') {
+          const distance = calculateDistance(
+            parseFloat(currentUser.latitude),
+            parseFloat(currentUser.longitude),
+            location.lat,
+            location.lng
+          );
+          
+          if (distance > currentUser.radius) {
+            gpsStatus.className = 'mb-4 p-3 bg-red-50 border border-red-200 rounded-lg';
+            gpsStatus.innerHTML = `<p class="text-sm text-red-800">❌ Anda di luar radius kantor! (${Math.round(distance)}m dari kantor)</p>`;
+            confirmBtn.innerHTML = 'Lokasi Tidak Valid';
+            confirmBtn.disabled = true;
+            return;
+          }
+        }
+        
+        gpsStatus.className = 'mb-4 p-3 bg-green-50 border border-green-200 rounded-lg';
+        gpsStatus.innerHTML = `<p class="text-sm text-green-800">✅ Lokasi GPS berhasil didapat</p>`;
+        confirmBtn.innerHTML = '✅ Konfirmasi Absen Masuk';
+        confirmBtn.disabled = false;
+        confirmBtn.onclick = async () => {
+          confirmBtn.innerHTML = '<span class="loading-spinner"></span>';
+          confirmBtn.disabled = true;
+          
+          const attendanceData = {
+            type: 'attendance',
+            employee_id: currentUser.employee_id,
+            nama: currentUser.nama,
+            attendance_type: 'masuk',
+            check_time: new Date().toISOString(),
+            location_lat: location.lat.toString(),
+            location_lng: location.lng.toString(),
+            has_photo: true,
+            photo_url: 'https://via.placeholder.com/150/0000FF/FFFFFF?text=CheckIn',
+            notes: 'Absen masuk dengan GPS'
+          };
+          
+          const result = await window.dataSdk.create(attendanceData);
+          if (result.isOk) {
+            showToast('Absen masuk berhasil! 🎉', 'success');
+            closeModal();
+            renderDashboard();
+          } else {
+            showToast('Gagal absen: ' + result.error, 'error');
+            confirmBtn.innerHTML = '✅ Konfirmasi Absen Masuk';
+            confirmBtn.disabled = false;
+          }
+        };
+      } catch (error) {
+        const gpsStatus = document.getElementById('gpsStatus');
+        gpsStatus.className = 'mb-4 p-3 bg-red-50 border border-red-200 rounded-lg';
+        gpsStatus.innerHTML = `<p class="text-sm text-red-800">❌ Gagal mendapatkan lokasi GPS. Aktifkan GPS Anda!</p>`;
+        document.getElementById('confirmCheckIn').innerHTML = 'GPS Error';
+      }
+    }
+
+    async function handleCheckOut() {
+      if (allData.length >= 999) {
+        showToast('Database penuh! Hubungi administrator.', 'error');
+        return;
+      }
+
+      if (!hasCheckedInToday(currentUser.employee_id)) {
+        showToast('Anda belum absen masuk hari ini!', 'warning');
+        return;
+      }
+
+      if (hasCheckedOutToday(currentUser.employee_id)) {
+        showToast('Anda sudah absen pulang hari ini!', 'warning');
+        return;
+      }
+
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `
+        <div class="modal-content p-6">
+          <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">🚪 Absen Pulang</h3>
+          
+          <div class="camera-preview mb-4">
+            😊
+          </div>
+          
+          <p class="text-center text-sm text-gray-600 mb-4">Foto selfie (mode dummy)</p>
+          
+          <div id="gpsStatus" class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p class="text-sm text-yellow-800">📍 Mengambil lokasi GPS...</p>
+          </div>
+          
+          <div class="flex gap-3">
+            <button onclick="closeModal()" class="flex-1 px-4 py-3 bg-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-400 transition">
+              Batal
+            </button>
+            <button id="confirmCheckOut" class="flex-1 px-4 py-3 btn-danger text-white rounded-lg font-semibold" disabled>
+              <span class="loading-spinner"></span>
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      currentModal = modal;
+
+      // Get GPS location
+      try {
+        const location = await getCurrentLocation();
+        const gpsStatus = document.getElementById('gpsStatus');
+        const confirmBtn = document.getElementById('confirmCheckOut');
+        
+        gpsStatus.className = 'mb-4 p-3 bg-green-50 border border-green-200 rounded-lg';
+        gpsStatus.innerHTML = `<p class="text-sm text-green-800">✅ Lokasi GPS berhasil didapat</p>`;
+        confirmBtn.innerHTML = '✅ Konfirmasi Absen Pulang';
+        confirmBtn.disabled = false;
+        confirmBtn.onclick = async () => {
+          confirmBtn.innerHTML = '<span class="loading-spinner"></span>';
+          confirmBtn.disabled = true;
+          
+          const attendanceData = {
+            type: 'attendance',
+            employee_id: currentUser.employee_id,
+            nama: currentUser.nama,
+            attendance_type: 'pulang',
+            check_time: new Date().toISOString(),
+            location_lat: location.lat.toString(),
+            location_lng: location.lng.toString(),
+            has_photo: true,
+            photo_url: 'https://via.placeholder.com/150/FF0000/FFFFFF?text=CheckOut',
+            notes: 'Absen pulang dengan GPS'
+          };
+          
+          const result = await window.dataSdk.create(attendanceData);
+          if (result.isOk) {
+            showToast('Absen pulang berhasil! 👋', 'success');
+            closeModal();
+            renderDashboard();
+          } else {
+            showToast('Gagal absen: ' + result.error, 'error');
+            confirmBtn.innerHTML = '✅ Konfirmasi Absen Pulang';
+            confirmBtn.disabled = false;
+          }
+        };
+      } catch (error) {
+        const gpsStatus = document.getElementById('gpsStatus');
+        gpsStatus.className = 'mb-4 p-3 bg-red-50 border border-red-200 rounded-lg';
+        gpsStatus.innerHTML = `<p class="text-sm text-red-800">❌ Gagal mendapatkan lokasi GPS. Aktifkan GPS Anda!</p>`;
+        document.getElementById('confirmCheckOut').innerHTML = 'GPS Error';
+      }
+    }
+
+    // ============================================
+    // LEAVE REQUEST FUNCTIONS
+    // ============================================
+    function showLeaveRequestForm() {
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `
+        <div class="modal-content p-6">
+          <h3 class="text-2xl font-bold text-gray-800 mb-4">📝 Ajukan Izin/Cuti</h3>
+          
+          <form id="leaveForm">
+            <div class="mb-4">
+              <label class="block text-sm font-semibold mb-2 text-gray-700">Jenis Izin</label>
+              <select id="leaveType" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-600" required>
+                <option value="sakit">🤒 Sakit</option>
+                <option value="izin">📋 Izin</option>
+                <option value="cuti">🏖️ Cuti</option>
+                <option value="tugas_luar_kota">✈️ Tugas Luar Kota</option>
+              </select>
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-semibold mb-2 text-gray-700">Tanggal Mulai</label>
+              <input type="date" id="leaveStart" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-600" required />
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-semibold mb-2 text-gray-700">Tanggal Selesai</label>
+              <input type="date" id="leaveEnd" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-600" required />
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-semibold mb-2 text-gray-700">Alasan</label>
+              <textarea id="leaveReason" rows="3" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-600" placeholder="Jelaskan alasan Anda..." required></textarea>
+            </div>
+            
+            <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <p class="text-sm text-green-800 font-semibold mb-2">💬 Kirim via WhatsApp Admin:</p>
+              <p class="text-xs text-green-700">Pengajuan akan tersimpan di sistem DAN dikirim ke WhatsApp admin untuk approval lebih cepat</p>
+            </div>
+            
+            <div class="flex gap-3">
+              <button type="button" onclick="closeModal()" class="flex-1 px-4 py-3 bg-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-400 transition">
+                Batal
+              </button>
+              <button type="submit" class="flex-1 px-4 py-3 btn-secondary text-white rounded-lg font-semibold">
+                📤 Kirim Pengajuan
+              </button>
+            </div>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      currentModal = modal;
+
+      document.getElementById('leaveForm').addEventListener('submit', handleLeaveSubmit);
+    }
+
+    async function handleLeaveSubmit(e) {
+      e.preventDefault();
+      
+      if (allData.length >= 999) {
+        showToast('Database penuh! Hubungi administrator.', 'error');
+        return;
+      }
+
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<span class="loading-spinner"></span>';
+      submitBtn.disabled = true;
+
+      const leaveType = document.getElementById('leaveType').value;
+      const leaveStart = document.getElementById('leaveStart').value;
+      const leaveEnd = document.getElementById('leaveEnd').value;
+      const leaveReason = document.getElementById('leaveReason').value;
+
+      const leaveData = {
+        type: 'leave',
+        employee_id: currentUser.employee_id,
+        nama: currentUser.nama,
+        leave_type: leaveType,
+        leave_start: leaveStart,
+        leave_end: leaveEnd,
+        leave_reason: leaveReason,
+        leave_status: 'pending',
+        check_time: new Date().toISOString(),
+        approved_by: '',
+        approved_at: ''
+      };
+
+      const result = await window.dataSdk.create(leaveData);
+      if (result.isOk) {
+        showToast('Pengajuan izin berhasil dikirim! 🎉', 'success');
+        
+        // Get admin WhatsApp number from config
+        const adminConfig = allData.find(d => d.type === 'config' && d.config_key === 'admin_whatsapp');
+        
+        if (adminConfig && adminConfig.config_value) {
+          const adminWA = adminConfig.config_value;
+          const leaveTypeText = leaveType === 'sakit' ? '🤒 SAKIT' : 
+                               leaveType === 'izin' ? '📋 IZIN' : 
+                               leaveType === 'tugas_luar_kota' ? '✈️ TUGAS LUAR KOTA' : 
+                               '🏖️ CUTI';
+          
+          const message = `*PENGAJUAN ${leaveTypeText}*
+
+👤 *Nama:* ${currentUser.nama}
+🆔 *ID:* ${currentUser.employee_id}
+📅 *Periode:* ${leaveStart} s/d ${leaveEnd}
+📝 *Alasan:* ${leaveReason}
+
+⏳ Status: Menunggu Approval
+
+_Mohon di-review dan approve melalui sistem presensi._`;
+
+          const waURL = `https://wa.me/${adminWA}?text=${encodeURIComponent(message)}`;
+          
+          // Open WhatsApp in new tab
+          setTimeout(() => {
+            window.open(waURL, '_blank', 'noopener,noreferrer');
+          }, 500);
+        }
+        
+        closeModal();
+        renderDashboard();
+      } else {
+        showToast('Gagal mengirim pengajuan: ' + result.error, 'error');
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+      }
+    }
+
+    async function approveLeave(leave) {
+      if (!leave.__backendId) return;
+      
+      const updatedLeave = {
+        ...leave,
+        leave_status: 'approved',
+        approved_by: currentUser.nama,
+        approved_at: new Date().toISOString()
+      };
+      
+      const result = await window.dataSdk.update(updatedLeave);
+      if (result.isOk) {
+        showToast('Pengajuan disetujui! ✅', 'success');
+      } else {
+        showToast('Gagal menyetujui: ' + result.error, 'error');
+      }
+    }
+
+    async function rejectLeave(leave) {
+      if (!leave.__backendId) return;
+      
+      const updatedLeave = {
+        ...leave,
+        leave_status: 'rejected',
+        approved_by: currentUser.nama,
+        approved_at: new Date().toISOString()
+      };
+      
+      const result = await window.dataSdk.update(updatedLeave);
+      if (result.isOk) {
+        showToast('Pengajuan ditolak!', 'warning');
+      } else {
+        showToast('Gagal menolak: ' + result.error, 'error');
+      }
+    }
+
+    // ============================================
+    // EMPLOYEE MANAGEMENT (ADMIN)
+    // ============================================
+    function showAddEmployeeForm() {
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `
+        <div class="modal-content p-6">
+          <h3 class="text-2xl font-bold text-gray-800 mb-4">➕ Tambah Karyawan</h3>
+          
+          <form id="employeeForm">
+            <div class="mb-4">
+              <label class="block text-sm font-semibold mb-2 text-gray-700">Nama Lengkap</label>
+              <input type="text" id="empNama" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-600" required />
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-semibold mb-2 text-gray-700">ID Karyawan</label>
+              <input type="text" id="empId" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-600" placeholder="GMS001" required />
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-semibold mb-2 text-gray-700">No. HP</label>
+              <input type="tel" id="empHp" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-600" placeholder="08123456789" required />
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-semibold mb-2 text-gray-700">Lokasi Kerja</label>
+              <input type="text" id="empLokasi" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-600" placeholder="Jakarta Office" required />
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-semibold mb-2 text-gray-700">Role</label>
+              <select id="empRole" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-600" required>
+                <option value="user">👤 Karyawan</option>
+                <option value="admin">👑 Admin</option>
+              </select>
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-sm font-semibold mb-2 text-gray-700">Mode GPS</label>
+              <select id="empGpsMode" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-600" required>
+                <option value="bebas">🆓 Bebas (Absen dari mana saja)</option>
+                <option value="terkunci">🔒 Terkunci (Harus di lokasi kantor)</option>
+              </select>
+            </div>
+            
+            <div id="gpsFields" style="display: none;">
+              <div class="mb-4">
+                <label class="block text-sm font-semibold mb-2 text-gray-700">Latitude Kantor</label>
+                <input type="text" id="empLat" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-600" placeholder="-6.200000" />
+              </div>
+              
+              <div class="mb-4">
+                <label class="block text-sm font-semibold mb-2 text-gray-700">Longitude Kantor</label>
+                <input type="text" id="empLng" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-600" placeholder="106.816666" />
+              </div>
+              
+              <div class="mb-4">
+                <label class="block text-sm font-semibold mb-2 text-gray-700">Radius (meter)</label>
+                <input type="number" id="empRadius" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-600" placeholder="100" value="100" />
+              </div>
+            </div>
+            
+            <div class="flex gap-3">
+              <button type="button" onclick="closeModal()" class="flex-1 px-4 py-3 bg-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-400 transition">
+                Batal
+              </button>
+              <button type="submit" class="flex-1 px-4 py-3 btn-primary text-white rounded-lg font-semibold">
+                ✅ Simpan Karyawan
+              </button>
+            </div>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      currentModal = modal;
+
+      document.getElementById('empGpsMode').addEventListener('change', (e) => {
+        document.getElementById('gpsFields').style.display = e.target.value === 'terkunci' ? 'block' : 'none';
+      });
+
+      document.getElementById('employeeForm').addEventListener('submit', handleEmployeeSubmit);
+    }
+
+    async function handleEmployeeSubmit(e) {
+      e.preventDefault();
+      
+      if (allData.length >= 999) {
+        showToast('Database penuh!', 'error');
+        return;
+      }
+
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<span class="loading-spinner"></span>';
+      submitBtn.disabled = true;
+
+      const gpsMode = document.getElementById('empGpsMode').value;
+      
+      const employeeData = {
+        type: 'user',
+        employee_id: document.getElementById('empId').value.trim(),
+        nama: document.getElementById('empNama').value.trim(),
+        no_hp: document.getElementById('empHp').value.trim(),
+        lokasi_kerja: document.getElementById('empLokasi').value.trim(),
+        role: document.getElementById('empRole').value,
+        gps_mode: gpsMode,
+        latitude: gpsMode === 'terkunci' ? document.getElementById('empLat').value.trim() : '0',
+        longitude: gpsMode === 'terkunci' ? document.getElementById('empLng').value.trim() : '0',
+        radius: gpsMode === 'terkunci' ? parseInt(document.getElementById('empRadius').value) : 0
+      };
+
+      const result = await window.dataSdk.create(employeeData);
+      if (result.isOk) {
+        showToast('Karyawan berhasil ditambahkan! 🎉', 'success');
+        closeModal();
+        renderDashboard();
+      } else {
+        showToast('Gagal menambahkan karyawan: ' + result.error, 'error');
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+      }
+    }
+
+    async function deleteEmployee(employee) {
+      if (!employee.__backendId) return;
+      
+      const confirmDiv = document.createElement('div');
+      confirmDiv.className = 'modal-overlay';
+      confirmDiv.innerHTML = `
+        <div class="modal-content p-6 text-center">
+          <div class="text-6xl mb-4">⚠️</div>
+          <h3 class="text-xl font-bold text-gray-800 mb-2">Hapus Karyawan?</h3>
+          <p class="text-gray-600 mb-6">Yakin ingin menghapus <strong>${employee.nama}</strong>?</p>
+          <div class="flex gap-3">
+            <button onclick="closeModal()" class="flex-1 px-4 py-3 bg-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-400 transition">
+              Batal
+            </button>
+            <button id="confirmDelete" class="flex-1 px-4 py-3 btn-danger text-white rounded-lg font-semibold">
+              🗑️ Hapus
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(confirmDiv);
+      currentModal = confirmDiv;
+
+      document.getElementById('confirmDelete').onclick = async () => {
+        const btn = document.getElementById('confirmDelete');
+        btn.innerHTML = '<span class="loading-spinner"></span>';
+        btn.disabled = true;
+
+        const result = await window.dataSdk.delete(employee);
+        if (result.isOk) {
+          showToast('Karyawan berhasil dihapus', 'success');
+          closeModal();
+        } else {
+          showToast('Gagal menghapus: ' + result.error, 'error');
+          btn.innerHTML = '🗑️ Hapus';
+          btn.disabled = false;
+        }
+      };
+    }
+
+    // ============================================
+    // IMPORT FUNCTIONS
+    // ============================================
+    function showImportEmployeeForm() {
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `
+        <div class="modal-content p-6">
+          <h3 class="text-2xl font-bold text-gray-800 mb-4">📤 Import Data Karyawan (CSV)</h3>
+          
+          <div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p class="text-sm text-blue-800 font-semibold mb-2">📋 Format CSV yang diperlukan:</p>
+            <code class="text-xs text-blue-900 block bg-white p-2 rounded">
+              nama,employee_id,no_hp,lokasi_kerja,role,gps_mode,latitude,longitude,radius
+            </code>
+            <p class="text-xs text-blue-700 mt-2">Contoh:<br>
+            <code class="bg-white p-1 rounded">John Doe,EMP001,08123456789,Jakarta,user,bebas,0,0,0</code>
+            </p>
+          </div>
+
+          <div class="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <p class="text-sm text-amber-800">
+              ⚠️ <strong>Catatan Penting:</strong><br>
+              • File harus dalam format CSV (.csv)<br>
+              • Baris pertama adalah header (akan dilewati)<br>
+              • Role: <code>user</code> atau <code>admin</code><br>
+              • GPS Mode: <code>bebas</code> atau <code>terkunci</code><br>
+              • Limit database: ${allData.length}/999
+            </p>
+          </div>
+          
+          <div class="mb-4">
+            <label class="block text-sm font-semibold mb-2 text-gray-700">Pilih File CSV</label>
+            <input type="file" id="csvFileInput" accept=".csv" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-600" />
+          </div>
+
+          <div id="importPreview" class="mb-4" style="display: none;">
+            <p class="text-sm font-semibold text-gray-700 mb-2">Preview Data:</p>
+            <div id="previewContent" class="max-h-48 overflow-y-auto bg-gray-50 p-3 rounded-lg border"></div>
+          </div>
+
+          <div id="importStatus" class="mb-4" style="display: none;"></div>
+          
+          <div class="flex gap-3">
+            <button onclick="closeModal()" class="flex-1 px-4 py-3 bg-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-400 transition">
+              Batal
+            </button>
+            <button id="importBtn" onclick="processImportCSV()" class="flex-1 px-4 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg font-semibold" disabled>
+              📤 Import Data
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      currentModal = modal;
+
+      document.getElementById('csvFileInput').addEventListener('change', handleCSVFileSelect);
+    }
+
+    let csvParsedData = [];
+
+    function handleCSVFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const csvText = event.target.result;
+        parseCSVData(csvText);
+      };
+      reader.readAsText(file);
+    }
+
+    function parseCSVData(csvText) {
+      const lines = csvText.split('\n').filter(line => line.trim());
+      
+      if (lines.length < 2) {
+        showImportError('File CSV kosong atau tidak valid!');
+        return;
+      }
+
+      // Skip header (first line)
+      const dataLines = lines.slice(1);
+      csvParsedData = [];
+
+      dataLines.forEach((line, index) => {
+        const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
+        
+        if (values.length >= 9) {
+          const employeeData = {
+            type: 'user',
+            nama: values[0],
+            employee_id: values[1],
+            no_hp: values[2],
+            lokasi_kerja: values[3],
+            role: values[4] || 'user',
+            gps_mode: values[5] || 'bebas',
+            latitude: values[6] || '0',
+            longitude: values[7] || '0',
+            radius: parseInt(values[8]) || 0
+          };
+
+          // Validate required fields
+          if (employeeData.nama && employeeData.employee_id) {
+            csvParsedData.push(employeeData);
+          }
+        }
+      });
+
+      if (csvParsedData.length === 0) {
+        showImportError('Tidak ada data valid yang ditemukan di file CSV!');
+        return;
+      }
+
+      // Check if would exceed limit
+      if (allData.length + csvParsedData.length > 999) {
+        showImportError(`Import gagal! Data akan melebihi limit (${allData.length} + ${csvParsedData.length} > 999)`);
+        return;
+      }
+
+      // Show preview
+      const previewDiv = document.getElementById('importPreview');
+      const previewContent = document.getElementById('previewContent');
+      
+      previewDiv.style.display = 'block';
+      previewContent.innerHTML = `
+        <p class="text-sm text-green-700 font-semibold mb-2">✅ ${csvParsedData.length} karyawan siap diimport</p>
+        ${csvParsedData.slice(0, 5).map(emp => `
+          <div class="text-xs bg-white p-2 mb-1 rounded border">
+            <strong>${emp.nama}</strong> (${emp.employee_id}) - ${emp.role === 'admin' ? '👑 Admin' : '👤 User'} - ${emp.gps_mode === 'terkunci' ? '🔒 Terkunci' : '🆓 Bebas'}
+          </div>
+        `).join('')}
+        ${csvParsedData.length > 5 ? `<p class="text-xs text-gray-600 mt-2">... dan ${csvParsedData.length - 5} lainnya</p>` : ''}
+      `;
+
+      document.getElementById('importBtn').disabled = false;
+    }
+
+    function showImportError(message) {
+      const statusDiv = document.getElementById('importStatus');
+      statusDiv.style.display = 'block';
+      statusDiv.className = 'mb-4 p-3 bg-red-50 border border-red-200 rounded-lg';
+      statusDiv.innerHTML = `<p class="text-sm text-red-800">❌ ${message}</p>`;
+      document.getElementById('importBtn').disabled = true;
+    }
+
+    async function processImportCSV() {
+      if (csvParsedData.length === 0) return;
+
+      const importBtn = document.getElementById('importBtn');
+      const statusDiv = document.getElementById('importStatus');
+      
+      importBtn.innerHTML = '<span class="loading-spinner"></span>';
+      importBtn.disabled = true;
+
+      statusDiv.style.display = 'block';
+      statusDiv.className = 'mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg';
+      statusDiv.innerHTML = `<p class="text-sm text-blue-800">⏳ Mengimport data... 0/${csvParsedData.length}</p>`;
+
+      let successCount = 0;
+      let failCount = 0;
+
+      for (let i = 0; i < csvParsedData.length; i++) {
+        const emp = csvParsedData[i];
+        
+        // Check if employee ID already exists
+        const existingEmployee = getUsers().find(u => u.employee_id === emp.employee_id);
+        if (existingEmployee) {
+          failCount++;
+          continue;
+        }
+
+        // Check database limit before each insert
+        if (allData.length >= 999) {
+          statusDiv.className = 'mb-4 p-3 bg-red-50 border border-red-200 rounded-lg';
+          statusDiv.innerHTML = `<p class="text-sm text-red-800">❌ Database penuh! Berhasil: ${successCount}, Gagal: ${failCount + (csvParsedData.length - i)}</p>`;
+          break;
+        }
+
+        const result = await window.dataSdk.create(emp);
+        
+        if (result.isOk) {
+          successCount++;
+        } else {
+          failCount++;
+        }
+
+        // Update progress
+        statusDiv.innerHTML = `<p class="text-sm text-blue-800">⏳ Mengimport data... ${i + 1}/${csvParsedData.length}</p>`;
+      }
+
+      // Show final result
+      if (successCount > 0) {
+        statusDiv.className = 'mb-4 p-3 bg-green-50 border border-green-200 rounded-lg';
+        statusDiv.innerHTML = `<p class="text-sm text-green-800">✅ Import selesai! Berhasil: ${successCount}, Gagal: ${failCount}</p>`;
+        showToast(`Import berhasil! ${successCount} karyawan ditambahkan`, 'success');
+        
+        setTimeout(() => {
+          closeModal();
+          renderDashboard();
+        }, 2000);
+      } else {
+        statusDiv.className = 'mb-4 p-3 bg-red-50 border border-red-200 rounded-lg';
+        statusDiv.innerHTML = `<p class="text-sm text-red-800">❌ Import gagal! Semua data gagal diimport atau ID sudah ada.</p>`;
+        importBtn.innerHTML = '📤 Import Data';
+        importBtn.disabled = false;
+      }
+    }
+
+    // ============================================
+    // DOWNLOAD FUNCTIONS
+    // ============================================
+    function downloadAttendanceCSV() {
+      const attendance = getAttendance();
+      
+      if (attendance.length === 0) {
+        showToast('Tidak ada data absensi untuk didownload', 'warning');
+        return;
+      }
+
+      // CSV Header
+      let csv = 'Nama,ID Karyawan,Tipe Absensi,Tanggal,Waktu,Photo URL,Latitude,Longitude,Catatan\n';
+
+      // CSV Data
+      attendance.forEach(att => {
+        const date = new Date(att.check_time);
+        const tanggal = date.toLocaleDateString('id-ID');
+        const waktu = date.toLocaleTimeString('id-ID');
+        
+        csv += `"${att.nama}","${att.employee_id}","${att.attendance_type === 'masuk' ? 'Masuk' : 'Pulang'}","${tanggal}","${waktu}","${att.photo_url || '-'}","${att.location_lat}","${att.location_lng}","${att.notes || '-'}"\n`;
+      });
+
+      // Create download link
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', `Rekap_Absensi_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      showToast(`Download berhasil! ${attendance.length} data absensi`, 'success');
+    }
+
+    function downloadEmployeesCSV() {
+      const employees = getUsers().filter(u => u.role !== 'admin');
+      
+      if (employees.length === 0) {
+        showToast('Tidak ada data karyawan untuk didownload', 'warning');
+        return;
+      }
+
+      // CSV Header
+      let csv = 'Nama,ID Karyawan,No HP,Lokasi Kerja,Mode GPS,Latitude,Longitude,Radius\n';
+
+      // CSV Data
+      employees.forEach(emp => {
+        csv += `"${emp.nama}","${emp.employee_id}","${emp.no_hp}","${emp.lokasi_kerja}","${emp.gps_mode}","${emp.latitude}","${emp.longitude}","${emp.radius}"\n`;
+      });
+
+      // Create download link
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', `Data_Karyawan_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      showToast(`Download berhasil! ${employees.length} data karyawan`, 'success');
+    }
+
+    function downloadLeaveRequestsCSV() {
+      const leaves = getLeaveRequests();
+      
+      if (leaves.length === 0) {
+        showToast('Tidak ada data pengajuan untuk didownload', 'warning');
+        return;
+      }
+
+      // CSV Header
+      let csv = 'Nama,ID Karyawan,Jenis,Tanggal Mulai,Tanggal Selesai,Alasan,Status,Disetujui Oleh,Tanggal Approval\n';
+
+      // CSV Data
+      leaves.forEach(leave => {
+        const approvedAt = leave.approved_at ? new Date(leave.approved_at).toLocaleDateString('id-ID') : '-';
+        csv += `"${leave.nama}","${leave.employee_id}","${leave.leave_type}","${leave.leave_start}","${leave.leave_end}","${leave.leave_reason}","${leave.leave_status}","${leave.approved_by || '-'}","${approvedAt}"\n`;
+      });
+
+      // Create download link
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', `Pengajuan_Izin_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      showToast(`Download berhasil! ${leaves.length} data pengajuan`, 'success');
+    }
+
+    // ============================================
+    // SETTINGS FUNCTIONS
+    // ============================================
+    async function saveWhatsAppConfig() {
+      const waNumber = document.getElementById('adminWhatsApp').value.trim();
+      
+      if (!waNumber) {
+        showToast('Mohon isi nomor WhatsApp!', 'error');
+        return;
+      }
+      
+      // Validate WhatsApp number format
+      if (!/^62[0-9]{9,13}$/.test(waNumber)) {
+        showToast('Format nomor tidak valid! Gunakan format 628xxxxxxxxxx', 'error');
+        return;
+      }
+      
+      const adminConfig = allData.find(d => d.type === 'config' && d.config_key === 'admin_whatsapp');
+      
+      if (adminConfig && adminConfig.__backendId) {
+        // Update existing config
+        const updatedConfig = {
+          ...adminConfig,
+          config_value: waNumber
+        };
+        
+        const result = await window.dataSdk.update(updatedConfig);
+        if (result.isOk) {
+          showToast('Nomor WhatsApp berhasil diperbarui! ✅', 'success');
+          renderDashboard();
+        } else {
+          showToast('Gagal memperbarui: ' + result.error, 'error');
+        }
+      } else {
+        // Create new config
+        if (allData.length >= 999) {
+          showToast('Database penuh!', 'error');
+          return;
+        }
+        
+        const configData = {
+          type: 'config',
+          config_key: 'admin_whatsapp',
+          config_value: waNumber
+        };
+        
+        const result = await window.dataSdk.create(configData);
+        if (result.isOk) {
+          showToast('Nomor WhatsApp berhasil disimpan! ✅', 'success');
+          renderDashboard();
+        } else {
+          showToast('Gagal menyimpan: ' + result.error, 'error');
+        }
+      }
+    }
+
+    // ============================================
+    // MODAL FUNCTIONS
+    // ============================================
+    function closeModal() {
+      if (currentModal) {
+        currentModal.remove();
+        currentModal = null;
+      }
+    }
+
+    // ============================================
+    // NAVIGATION
+    // ============================================
+    function navigateTo(page) {
+      currentPage = page;
+      renderDashboard();
+    }
+
+    // ============================================
+    // RENDER FUNCTIONS
+    // ============================================
+    function renderLogin() {
+      const app = document.getElementById('app');
+      if (!app) return;
+
+      app.innerHTML = `
+        <div class="h-full w-full flex items-center justify-center gradient-primary">
+          <div class="bg-white rounded-2xl card-shadow p-8 w-full max-w-sm mx-4">
+            <div class="text-center mb-6">
+              <div class="text-5xl mb-3">👤</div>
+              <h1 class="text-2xl font-bold text-gray-800 mb-2">${defaultConfig.company_name}</h1>
+              <p class="text-base text-gray-600 mb-1">${defaultConfig.app_subtitle}</p>
+              <div class="mt-4 mb-4 p-3 bg-gradient-to-r from-slate-100 to-gray-100 rounded-lg">
+                <p class="text-xl font-bold text-slate-800">${defaultConfig.welcome_text}</p>
+              </div>
+            </div>
+
+            <form id="loginForm" class="space-y-4">
+              <div>
+                <label for="loginNama" class="block text-sm font-semibold mb-2 text-gray-700">
+                  Nama Lengkap
+                </label>
+                <input 
+                  type="text" 
+                  id="loginNama" 
+                  class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-600 transition"
+                  placeholder="Masukkan nama lengkap"
+                  required
+                  autocomplete="off"
+                />
+              </div>
+
+              <div>
+                <label for="loginId" class="block text-sm font-semibold mb-2 text-gray-700">
+                  ID Karyawan
+                </label>
+                <input 
+                  type="text" 
+                  id="loginId" 
+                  class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-600 transition"
+                  placeholder="Masukkan ID karyawan"
+                  required
+                  autocomplete="off"
+                />
+              </div>
+
+              <button 
+                type="submit" 
+                class="w-full text-white py-3 rounded-lg font-bold text-base hover:shadow-xl transition transform hover:scale-105"
+                style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);"
+              >
+                🔐 Masuk
+              </button>
+            </form>
+
+            <div class="mt-5 text-center text-sm text-gray-500">
+              <p>${defaultConfig.footer_text}</p>
+              <p class="text-xs mt-1 text-gray-400">rionurmansyah</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const loginForm = document.getElementById('loginForm');
+      if (loginForm) {
+        loginForm.addEventListener('submit', handleLogin);
+      }
+    }
+
+    function renderDashboard() {
+      const app = document.getElementById('app');
+      if (!app || !currentUser) return;
+
+      const isAdmin = currentUser.role === 'admin';
+      const users = getUsers();
+      const employees = users.filter(u => u.role !== 'admin');
+      const attendance = getAttendance();
+      const leaves = getLeaveRequests();
+      const myLeaves = leaves.filter(l => l.employee_id === currentUser.employee_id);
+      const pendingLeaves = leaves.filter(l => l.leave_status === 'pending');
+      const todayAttendance = getTodayAttendance(currentUser.employee_id);
+      const hasCheckedIn = hasCheckedInToday(currentUser.employee_id);
+      const hasCheckedOut = hasCheckedOutToday(currentUser.employee_id);
+
+      let content = '';
+
+      if (currentPage === 'dashboard') {
+        if (isAdmin) {
+          content = `
+            <div class="grid md:grid-cols-4 gap-6 mb-6">
+              <div class="bg-gradient-to-br from-slate-700 to-slate-800 text-white rounded-xl card-shadow p-6 transform hover:scale-105 transition">
+                <div class="flex items-center justify-between mb-2">
+                  <p class="text-slate-200 text-sm font-semibold">Total Karyawan</p>
+                  <span class="text-3xl">👥</span>
+                </div>
+                <p class="text-4xl font-bold">${employees.length}</p>
+              </div>
+
+              <div class="bg-gradient-to-br from-green-600 to-green-700 text-white rounded-xl card-shadow p-6 transform hover:scale-105 transition">
+                <div class="flex items-center justify-between mb-2">
+                  <p class="text-green-100 text-sm font-semibold">Absensi Hari Ini</p>
+                  <span class="text-3xl">✅</span>
+                </div>
+                <p class="text-4xl font-bold">${attendance.filter(a => a.check_time && a.check_time.startsWith(new Date().toISOString().split('T')[0])).length}</p>
+              </div>
+
+              <div class="bg-gradient-to-br from-amber-500 to-amber-600 text-white rounded-xl card-shadow p-6 transform hover:scale-105 transition">
+                <div class="flex items-center justify-between mb-2">
+                  <p class="text-amber-100 text-sm font-semibold">Pengajuan Izin</p>
+                  <span class="text-3xl">📋</span>
+                </div>
+                <p class="text-4xl font-bold">${pendingLeaves.length}</p>
+              </div>
+
+              <div class="bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-xl card-shadow p-6 transform hover:scale-105 transition">
+                <div class="flex items-center justify-between mb-2">
+                  <p class="text-blue-100 text-sm font-semibold">Data Tersimpan</p>
+                  <span class="text-3xl">💾</span>
+                </div>
+                <p class="text-xl font-bold">${allData.length}/999</p>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-xl card-shadow p-8">
+              <h2 class="text-2xl font-bold text-gray-800 mb-6">🎉 Dashboard Admin</h2>
+              <div class="grid md:grid-cols-4 gap-6">
+                <button onclick="navigateTo('employees')" class="p-6 bg-gradient-to-br from-slate-600 to-slate-700 text-white rounded-xl hover:shadow-lg transition transform hover:scale-105">
+                  <div class="text-4xl mb-3">👥</div>
+                  <p class="font-bold text-lg">Kelola Karyawan</p>
+                  <p class="text-sm text-slate-200 mt-2">${employees.length} karyawan terdaftar</p>
+                </button>
+                
+                <button onclick="navigateTo('attendance')" class="p-6 bg-gradient-to-br from-green-600 to-green-700 text-white rounded-xl hover:shadow-lg transition transform hover:scale-105">
+                  <div class="text-4xl mb-3">📋</div>
+                  <p class="font-bold text-lg">Rekap Absensi</p>
+                  <p class="text-sm text-green-100 mt-2">${attendance.length} total absensi</p>
+                </button>
+                
+                <button onclick="navigateTo('leave')" class="p-6 bg-gradient-to-br from-amber-500 to-amber-600 text-white rounded-xl hover:shadow-lg transition transform hover:scale-105">
+                  <div class="text-4xl mb-3">📋</div>
+                  <p class="font-bold text-lg">Kelola Pengajuan</p>
+                  <p class="text-sm text-amber-100 mt-2">${pendingLeaves.length} pending approval</p>
+                </button>
+                
+                <button onclick="navigateTo('settings')" class="p-6 bg-gradient-to-br from-purple-600 to-purple-700 text-white rounded-xl hover:shadow-lg transition transform hover:scale-105">
+                  <div class="text-4xl mb-3">⚙️</div>
+                  <p class="font-bold text-lg">Pengaturan</p>
+                  <p class="text-sm text-purple-100 mt-2">WhatsApp & Config</p>
+                </button>
+              </div>
+            </div>
+          `;
+        } else {
+          // User Dashboard
+          content = `
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+              <div class="bg-white rounded-xl card-shadow p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">⏰ Status Absensi Hari Ini</h3>
+                ${!hasCheckedIn ? `
+                  <div class="text-center py-6">
+                    <div class="text-5xl mb-3">⏳</div>
+                    <p class="text-gray-600 mb-4">Belum absen masuk</p>
+                    <button onclick="handleCheckIn()" class="px-6 py-3 btn-primary text-white rounded-lg font-semibold inline-flex items-center gap-2">
+                      ✅ Absen Masuk
+                    </button>
+                  </div>
+                ` : !hasCheckedOut ? `
+                  <div class="text-center py-6">
+                    <div class="text-5xl mb-3">✅</div>
+                    <p class="text-green-600 font-semibold mb-1">Sudah Absen Masuk</p>
+                    <p class="text-sm text-gray-600 mb-4">${formatTime(todayAttendance.find(a => a.attendance_type === 'masuk').check_time)}</p>
+                    <button onclick="handleCheckOut()" class="px-6 py-3 btn-danger text-white rounded-lg font-semibold inline-flex items-center gap-2">
+                      🚪 Absen Pulang
+                    </button>
+                  </div>
+                ` : `
+                  <div class="text-center py-6">
+                    <div class="text-5xl mb-3">🎉</div>
+                    <p class="text-green-600 font-semibold mb-1">Absensi Lengkap</p>
+                    <div class="grid grid-cols-2 gap-4 mt-4">
+                      <div class="bg-green-50 p-3 rounded-lg">
+                        <p class="text-xs text-gray-600">Masuk</p>
+                        <p class="font-bold text-green-700">${formatTime(todayAttendance.find(a => a.attendance_type === 'masuk').check_time)}</p>
+                      </div>
+                      <div class="bg-blue-50 p-3 rounded-lg">
+                        <p class="text-xs text-gray-600">Pulang</p>
+                        <p class="font-bold text-blue-700">${formatTime(todayAttendance.find(a => a.attendance_type === 'pulang').check_time)}</p>
+                      </div>
+                    </div>
+                  </div>
+                `}
+              </div>
+
+              <div class="bg-white rounded-xl card-shadow p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">👤 Profil Saya</h3>
+                <div class="space-y-3">
+                  <div class="flex justify-between py-2 border-b">
+                    <span class="text-gray-600">Nama</span>
+                    <span class="font-semibold text-gray-800">${currentUser.nama}</span>
+                  </div>
+                  <div class="flex justify-between py-2 border-b">
+                    <span class="text-gray-600">ID</span>
+                    <span class="font-semibold text-gray-800">${currentUser.employee_id}</span>
+                  </div>
+                  <div class="flex justify-between py-2 border-b">
+                    <span class="text-gray-600">No. HP</span>
+                    <span class="font-semibold text-gray-800">${currentUser.no_hp}</span>
+                  </div>
+                  <div class="flex justify-between py-2 border-b">
+                    <span class="text-gray-600">Lokasi</span>
+                    <span class="font-semibold text-gray-800">${currentUser.lokasi_kerja}</span>
+                  </div>
+                  <div class="flex justify-between py-2">
+                    <span class="text-gray-600">GPS Mode</span>
+                    <span class="font-semibold ${currentUser.gps_mode === 'terkunci' ? 'text-red-600' : 'text-green-600'}">${currentUser.gps_mode === 'terkunci' ? '🔒 Terkunci' : '🆓 Bebas'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-xl card-shadow p-6 mb-6">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gray-800">📋 Pengajuan Izin/Cuti Saya</h3>
+                <button onclick="showLeaveRequestForm()" class="px-4 py-2 btn-secondary text-white rounded-lg font-semibold text-sm">
+                  ➕ Ajukan Izin
+                </button>
+              </div>
+              ${myLeaves.length === 0 ? `
+                <div class="text-center py-8 text-gray-500">
+                  <div class="text-4xl mb-2">📭</div>
+                  <p>Belum ada pengajuan izin</p>
+                </div>
+              ` : `
+                <div class="space-y-3">
+                  ${myLeaves.slice(-5).reverse().map(leave => `
+                    <div class="p-4 border-2 border-gray-200 rounded-lg hover:border-purple-300 transition">
+                      <div class="flex justify-between items-start mb-2">
+                        <div>
+                          <span class="font-semibold text-gray-800">
+                            ${leave.leave_type === 'sakit' ? '🤒 Sakit' : leave.leave_type === 'izin' ? '📋 Izin' : leave.leave_type === 'tugas_luar_kota' ? '✈️ Tugas Luar Kota' : '🏖️ Cuti'}
+                          </span>
+                          <p class="text-sm text-gray-600">${leave.leave_start} s/d ${leave.leave_end}</p>
+                        </div>
+                        <span class="status-badge status-${leave.leave_status}">${leave.leave_status === 'pending' ? '⏳ Pending' : leave.leave_status === 'approved' ? '✅ Disetujui' : '❌ Ditolak'}</span>
+                      </div>
+                      <p class="text-sm text-gray-700">${leave.leave_reason}</p>
+                      ${leave.approved_by ? `<p class="text-xs text-gray-500 mt-2">Oleh: ${leave.approved_by}</p>` : ''}
+                    </div>
+                  `).join('')}
+                </div>
+              `}
+            </div>
+
+            <div class="bg-white rounded-xl card-shadow p-6">
+              <h3 class="text-lg font-bold text-gray-800 mb-4">📋 Riwayat Absensi</h3>
+              ${todayAttendance.length === 0 ? `
+                <div class="text-center py-8 text-gray-500">
+                  <div class="text-4xl mb-2">📭</div>
+                  <p>Belum ada riwayat absensi hari ini</p>
+                </div>
+              ` : `
+                <div class="space-y-3">
+                  ${todayAttendance.reverse().map(att => `
+                    <div class="p-4 border-2 border-gray-200 rounded-lg">
+                      <div class="flex justify-between items-center">
+                        <div>
+                          <span class="status-badge status-${att.attendance_type}">${att.attendance_type === 'masuk' ? '✅ Masuk' : '🚪 Pulang'}</span>
+                          <p class="text-sm text-gray-600 mt-1">${formatDate(att.check_time)} • ${formatTime(att.check_time)}</p>
+                        </div>
+                        <div class="text-right">
+                          <p class="text-xs text-gray-500">📍 GPS Recorded</p>
+                          <p class="text-xs text-green-600 font-semibold">✅ Valid</p>
+                        </div>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              `}
+            </div>
+          `;
+        }
+      } else if (currentPage === 'employees' && isAdmin) {
+        content = `
+          <div class="bg-white rounded-xl card-shadow p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-2xl font-bold text-gray-800">👥 Kelola Karyawan</h2>
+              <div class="flex gap-2">
+                <button onclick="downloadEmployeesCSV()" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold hover:shadow-lg transition">
+                  📥 Download CSV
+                </button>
+                <button onclick="showImportEmployeeForm()" class="px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg font-semibold hover:shadow-lg transition">
+                  📤 Import CSV
+                </button>
+                <button onclick="showAddEmployeeForm()" class="px-4 py-2 btn-primary text-white rounded-lg font-semibold">
+                  ➕ Tambah Karyawan
+                </button>
+              </div>
+            </div>
+            ${employees.length === 0 ? `
+              <div class="text-center py-12 text-gray-500">
+                <div class="text-6xl mb-4">👥</div>
+                <p class="text-lg">Belum ada karyawan terdaftar</p>
+                <button onclick="showAddEmployeeForm()" class="mt-4 px-6 py-3 btn-primary text-white rounded-lg font-semibold">
+                  ➕ Tambah Karyawan Pertama
+                </button>
+              </div>
+            ` : `
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <thead>
+                    <tr class="border-b-2 border-gray-300">
+                      <th class="text-left py-3 px-4 font-semibold text-gray-700">Nama</th>
+                      <th class="text-left py-3 px-4 font-semibold text-gray-700">ID</th>
+                      <th class="text-left py-3 px-4 font-semibold text-gray-700">No. HP</th>
+                      <th class="text-left py-3 px-4 font-semibold text-gray-700">Lokasi</th>
+                      <th class="text-left py-3 px-4 font-semibold text-gray-700">Role</th>
+                      <th class="text-left py-3 px-4 font-semibold text-gray-700">GPS Mode</th>
+                      <th class="text-center py-3 px-4 font-semibold text-gray-700">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${employees.map(emp => `
+                      <tr class="border-b hover:bg-gray-50">
+                        <td class="py-3 px-4 font-semibold text-gray-800">${emp.nama}</td>
+                        <td class="py-3 px-4 text-gray-600">${emp.employee_id}</td>
+                        <td class="py-3 px-4 text-gray-600">${emp.no_hp}</td>
+                        <td class="py-3 px-4 text-gray-600">${emp.lokasi_kerja}</td>
+                        <td class="py-3 px-4">
+                          <span class="text-xs font-semibold ${emp.role === 'admin' ? 'text-purple-600' : 'text-blue-600'}">
+                            ${emp.role === 'admin' ? '👑 Admin' : '👤 Karyawan'}
+                          </span>
+                        </td>
+                        <td class="py-3 px-4">
+                          <span class="text-xs font-semibold ${emp.gps_mode === 'terkunci' ? 'text-red-600' : 'text-green-600'}">
+                            ${emp.gps_mode === 'terkunci' ? '🔒 Terkunci' : '🆓 Bebas'}
+                          </span>
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                          <button onclick='deleteEmployee(${JSON.stringify(emp).replace(/'/g, "&apos;")})' class="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition text-sm font-semibold">
+                            🗑️ Hapus
+                          </button>
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            `}
+          </div>
+        `;
+      } else if (currentPage === 'attendance' && isAdmin) {
+        const todayDate = new Date().toISOString().split('T')[0];
+        const todayAtt = attendance.filter(a => a.check_time && a.check_time.startsWith(todayDate));
+        
+        content = `
+          <div class="bg-white rounded-xl card-shadow p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-2xl font-bold text-gray-800">📋 Rekap Absensi</h2>
+              <button onclick="downloadAttendanceCSV()" class="px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg font-semibold hover:shadow-lg transition">
+                📥 Download CSV
+              </button>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-4 mb-6">
+              <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-lg">
+                <p class="text-sm text-gray-600 mb-1">Absen Hari Ini</p>
+                <p class="text-3xl font-bold text-green-700">${todayAtt.length}</p>
+              </div>
+              <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-lg">
+                <p class="text-sm text-gray-600 mb-1">Total Absensi</p>
+                <p class="text-3xl font-bold text-blue-700">${attendance.length}</p>
+              </div>
+              <div class="bg-gradient-to-br from-purple-50 to-violet-50 p-4 rounded-lg">
+                <p class="text-sm text-gray-600 mb-1">Total Karyawan</p>
+                <p class="text-3xl font-bold text-purple-700">${employees.length}</p>
+              </div>
+            </div>
+
+            ${attendance.length === 0 ? `
+              <div class="text-center py-12 text-gray-500">
+                <div class="text-6xl mb-4">📋</div>
+                <p class="text-lg">Belum ada data absensi</p>
+              </div>
+            ` : `
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <thead>
+                    <tr class="border-b-2 border-gray-300">
+                      <th class="text-left py-3 px-4 font-semibold text-gray-700">Nama</th>
+                      <th class="text-left py-3 px-4 font-semibold text-gray-700">ID</th>
+                      <th class="text-left py-3 px-4 font-semibold text-gray-700">Tipe</th>
+                      <th class="text-left py-3 px-4 font-semibold text-gray-700">Tanggal & Waktu</th>
+                      <th class="text-left py-3 px-4 font-semibold text-gray-700">Photo</th>
+                      <th class="text-left py-3 px-4 font-semibold text-gray-700">GPS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${attendance.slice(-50).reverse().map(att => `
+                      <tr class="border-b hover:bg-gray-50">
+                        <td class="py-3 px-4 font-semibold text-gray-800">${att.nama}</td>
+                        <td class="py-3 px-4 text-gray-600">${att.employee_id}</td>
+                        <td class="py-3 px-4">
+                          <span class="status-badge status-${att.attendance_type}">
+                            ${att.attendance_type === 'masuk' ? '✅ Masuk' : '🚪 Pulang'}
+                          </span>
+                        </td>
+                        <td class="py-3 px-4 text-gray-600">${formatDate(att.check_time)}<br><span class="text-sm">${formatTime(att.check_time)}</span></td>
+                        <td class="py-3 px-4">
+                          ${att.photo_url ? `<a href="${att.photo_url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">📷 Lihat Foto</a>` : '<span class="text-gray-400 text-sm">-</span>'}
+                        </td>
+                        <td class="py-3 px-4 text-green-600 text-sm">✅ Valid</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            `}
+          </div>
+        `;
+      } else if (currentPage === 'leave' && isAdmin) {
+        content = `
+          <div class="bg-white rounded-xl card-shadow p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-2xl font-bold text-gray-800">📋 Kelola Pengajuan Izin/Cuti</h2>
+              <button onclick="downloadLeaveRequestsCSV()" class="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg font-semibold hover:shadow-lg transition">
+                📥 Download CSV
+              </button>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-4 mb-6">
+              <div class="bg-gradient-to-br from-yellow-50 to-amber-50 p-4 rounded-lg">
+                <p class="text-sm text-gray-600 mb-1">Pending</p>
+                <p class="text-3xl font-bold text-yellow-700">${pendingLeaves.length}</p>
+              </div>
+              <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-lg">
+                <p class="text-sm text-gray-600 mb-1">Disetujui</p>
+                <p class="text-3xl font-bold text-green-700">${leaves.filter(l => l.leave_status === 'approved').length}</p>
+              </div>
+              <div class="bg-gradient-to-br from-red-50 to-rose-50 p-4 rounded-lg">
+                <p class="text-sm text-gray-600 mb-1">Ditolak</p>
+                <p class="text-3xl font-bold text-red-700">${leaves.filter(l => l.leave_status === 'rejected').length}</p>
+              </div>
+            </div>
+
+            ${leaves.length === 0 ? `
+              <div class="text-center py-12 text-gray-500">
+                <div class="text-6xl mb-4">📋</div>
+                <p class="text-lg">Belum ada pengajuan izin/cuti</p>
+              </div>
+            ` : `
+              <div class="space-y-4">
+                ${leaves.slice(-30).reverse().map(leave => `
+                  <div class="p-4 border-2 ${leave.leave_status === 'pending' ? 'border-yellow-300 bg-yellow-50' : leave.leave_status === 'approved' ? 'border-green-300 bg-green-50' : 'border-red-300 bg-red-50'} rounded-lg">
+                    <div class="flex justify-between items-start mb-3">
+                      <div>
+                        <p class="font-bold text-gray-800">${leave.nama} <span class="text-sm text-gray-600">(${leave.employee_id})</span></p>
+                        <p class="text-sm text-gray-700 mt-1">
+                          ${leave.leave_type === 'sakit' ? '🤒 Sakit' : leave.leave_type === 'izin' ? '📋 Izin' : leave.leave_type === 'tugas_luar_kota' ? '✈️ Tugas Luar Kota' : '🏖️ Cuti'} • 
+                          ${leave.leave_start} s/d ${leave.leave_end}
+                        </p>
+                      </div>
+                      <span class="status-badge status-${leave.leave_status}">
+                        ${leave.leave_status === 'pending' ? '⏳ Pending' : leave.leave_status === 'approved' ? '✅ Disetujui' : '❌ Ditolak'}
+                      </span>
+                    </div>
+                    <p class="text-sm text-gray-700 mb-3 bg-white p-2 rounded">${leave.leave_reason}</p>
+                    ${leave.leave_status === 'pending' ? `
+                      <div class="flex gap-2">
+                        <button onclick='approveLeave(${JSON.stringify(leave).replace(/'/g, "&apos;")})' class="px-4 py-2 btn-primary text-white rounded-lg font-semibold text-sm">
+                          ✅ Setujui
+                        </button>
+                        <button onclick='rejectLeave(${JSON.stringify(leave).replace(/'/g, "&apos;")})' class="px-4 py-2 btn-danger text-white rounded-lg font-semibold text-sm">
+                          ❌ Tolak
+                        </button>
+                      </div>
+                    ` : `
+                      <p class="text-xs text-gray-600">Oleh: ${leave.approved_by} • ${formatDate(leave.approved_at)}</p>
+                    `}
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </div>
+        `;
+      } else if (currentPage === 'settings' && isAdmin) {
+        const adminConfig = allData.find(d => d.type === 'config' && d.config_key === 'admin_whatsapp');
+        const currentWA = adminConfig ? adminConfig.config_value : '';
+        
+        content = `
+          <div class="bg-white rounded-xl card-shadow p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">⚙️ Pengaturan Sistem</h2>
+            
+            <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 mb-6">
+              <h3 class="text-lg font-bold text-gray-800 mb-4">💬 Nomor WhatsApp Admin</h3>
+              <p class="text-sm text-gray-600 mb-4">Nomor WhatsApp yang akan menerima notifikasi pengajuan izin/cuti dari karyawan.</p>
+              
+              <div class="mb-4">
+                <label class="block text-sm font-semibold mb-2 text-gray-700">Nomor WhatsApp (Format: 628xxxxxxxxxx)</label>
+                <input 
+                  type="text" 
+                  id="adminWhatsApp" 
+                  value="${currentWA}" 
+                  class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-green-600" 
+                  placeholder="628123456789"
+                />
+                <p class="text-xs text-gray-500 mt-2">💡 Contoh: 628123456789 (gunakan kode negara 62 tanpa +)</p>
+              </div>
+              
+              ${currentWA ? `
+                <div class="mb-4 p-3 bg-white rounded-lg border border-green-200">
+                  <p class="text-sm text-gray-700"><strong>Nomor Aktif:</strong> ${currentWA}</p>
+                  <a href="https://wa.me/${currentWA}" target="_blank" rel="noopener noreferrer" class="text-xs text-green-600 hover:text-green-700 font-semibold">
+                    📱 Test WhatsApp
+                  </a>
+                </div>
+              ` : ''}
+              
+              <button onclick="saveWhatsAppConfig()" class="w-full px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg font-semibold hover:shadow-lg transition">
+                💾 Simpan Nomor WhatsApp
+              </button>
+            </div>
+
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6">
+              <h3 class="text-lg font-bold text-gray-800 mb-4">📊 Informasi Sistem</h3>
+              <div class="space-y-2">
+                <div class="flex justify-between py-2 border-b">
+                  <span class="text-gray-600">Total Karyawan</span>
+                  <span class="font-semibold text-gray-800">${employees.length}</span>
+                </div>
+                <div class="flex justify-between py-2 border-b">
+                  <span class="text-gray-600">Total Absensi</span>
+                  <span class="font-semibold text-gray-800">${attendance.length}</span>
+                </div>
+                <div class="flex justify-between py-2 border-b">
+                  <span class="text-gray-600">Total Pengajuan</span>
+                  <span class="font-semibold text-gray-800">${leaves.length}</span>
+                </div>
+                <div class="flex justify-between py-2">
+                  <span class="text-gray-600">Data Tersimpan</span>
+                  <span class="font-semibold ${allData.length > 900 ? 'text-red-600' : 'text-gray-800'}">${allData.length}/999</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      app.innerHTML = `
+        <div class="h-full w-full" style="background: #e2e8f0;">
+          <!-- Header -->
+          <div class="gradient-primary text-white shadow-lg">
+            <div class="max-w-7xl mx-auto px-6 py-4">
+              <div class="flex justify-between items-center">
+                <div>
+                  <h1 class="text-2xl font-bold">${isAdmin ? '👑 Dashboard Admin' : '📱 Dashboard Karyawan'}</h1>
+                  <p class="text-purple-100 text-sm">${currentUser.nama} ${isAdmin ? '(Super Admin)' : `(${currentUser.employee_id})`}</p>
+                </div>
+                <button onclick="handleLogout()" class="px-5 py-2 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition font-semibold">
+                  🚪 Keluar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Running Text -->
+          <div class="marquee-container">
+            <div class="marquee-text">${defaultConfig.marquee_text}</div>
+          </div>
+
+          <!-- Navigation (Admin Only) -->
+          ${isAdmin ? `
+            <div class="bg-white shadow-sm border-b">
+              <div class="max-w-7xl mx-auto px-6">
+                <div class="flex gap-1">
+                  <button onclick="navigateTo('dashboard')" class="nav-btn px-6 py-3 font-semibold text-gray-700 ${currentPage === 'dashboard' ? 'active border-b-4 border-purple-600 text-purple-700' : 'hover:bg-gray-100'}">
+                    🏠 Dashboard
+                  </button>
+                  <button onclick="navigateTo('employees')" class="nav-btn px-6 py-3 font-semibold text-gray-700 ${currentPage === 'employees' ? 'active border-b-4 border-purple-600 text-purple-700' : 'hover:bg-gray-100'}">
+                    👥 Karyawan
+                  </button>
+                  <button onclick="navigateTo('attendance')" class="nav-btn px-6 py-3 font-semibold text-gray-700 ${currentPage === 'attendance' ? 'active border-b-4 border-purple-600 text-purple-700' : 'hover:bg-gray-100'}">
+                    📋 Absensi
+                  </button>
+                  <button onclick="navigateTo('leave')" class="nav-btn px-6 py-3 font-semibold text-gray-700 ${currentPage === 'leave' ? 'active border-b-4 border-purple-600 text-purple-700' : 'hover:bg-gray-100'}">
+                    📋 Pengajuan (${pendingLeaves.length})
+                  </button>
+                  <button onclick="navigateTo('settings')" class="nav-btn px-6 py-3 font-semibold text-gray-700 ${currentPage === 'settings' ? 'active border-b-4 border-purple-600 text-purple-700' : 'hover:bg-gray-100'}">
+                    ⚙️ Pengaturan
+                  </button>
+                </div>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Main Content -->
+          <div class="max-w-7xl mx-auto p-4">
+            ${content}
+          </div>
+        </div>
+      `;
+    }
+
+    // ============================================
+    // INITIALIZE APP
+    // ============================================
+    async function initApp() {
+      console.log('🚀 Initializing app with FULL FEATURES + WhatsApp...');
+
+      // Initialize Data SDK
+      try {
+        if (window.dataSdk) {
+          const dataResult = await window.dataSdk.init(dataHandler);
+          if (dataResult.isOk) {
+            console.log('✅ Data SDK initialized');
+          } else {
+            console.error('❌ Data SDK init failed:', dataResult.error);
+          }
+        } else {
+          console.warn('⚠️ Data SDK not available');
+        }
+      } catch (error) {
+        console.error('❌ SDK init error:', error);
+      }
+
+      // Render initial view
+      if (currentView === 'login') {
+        renderLogin();
+      }
+
+      console.log('✅ App ready with ALL FEATURES + WhatsApp!');
+    }
+
+    // Start app when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+      initApp();
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c180b0f24aaea7a',t:'MTc2OTAxMTQyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
