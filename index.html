@@ -3,61 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sistem Presensi GMS - Import CSV</title>
+    <title>Sistem Presensi GMS - Ultimate</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <style>
+        /* --- CSS VARIABLES & RESET --- */
         :root {
-            --primary: #051650;
-            --primary-dark: #4338ca;
-            --success: #10B981;
-            --danger: #EF4444;
-            --warning: #F59E0B;
-            --bg-app: #F3F4F6;
-            --surface: #FFFFFF;
-            --text-main: #111827;
-            --text-muted: #6B7280;
-            --border: #E5E7EB;
-            --radius-md: 16px;
+            --primary: #051650; --primary-dark: #4338ca;
+            --success: #10B981; --danger: #EF4444; --warning: #F59E0B;
+            --bg-app: #F3F4F6; --surface: #FFFFFF;
+            --text-main: #111827; --text-muted: #6B7280;
+            --border: #E5E7EB; --radius-md: 16px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg-app); color: var(--text-main); font-family: 'Inter', sans-serif; padding-bottom: 80px; }
         .hidden { display: none !important; }
         
+        /* Layout */
         .container { max-width: 480px; margin: 0 auto; padding: 0 20px; width: 100%; }
-        .container.admin { max-width: 1000px; }
+        .container.admin { max-width: 1200px; } /* Lebar Admin ditambah */
 
+        /* Components */
         .card { background: var(--surface); border-radius: var(--radius-md); padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        
-        .btn { padding: 12px 20px; border: none; border-radius: 12px; font-weight: 600; font-size: 0.95rem; cursor: pointer; width: 100%; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn:active { transform: scale(0.96); }
+        .btn { padding: 10px 20px; border: none; border-radius: 12px; font-weight: 600; font-size: 0.95rem; cursor: pointer; width: 100%; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn:active { transform: scale(0.98); }
         .btn-primary { background: var(--primary); color: white; }
         .btn-success { background: var(--success); color: white; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-outline { background: white; border: 1px solid var(--border); color: var(--text-main); }
         .btn-sm { padding: 6px 12px; font-size: 0.8rem; width: auto; display: inline-flex; }
+        .btn-print { background: var(--text-main); color: white; width: auto; }
 
+        /* Inputs */
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-size: 0.9rem; }
-        input:focus { border-color: var(--primary); outline: none; }
+        input:focus, textarea:focus { border-color: var(--primary); outline: none; }
         label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
 
+        /* Profile & Header */
         .profile-header { background: linear-gradient(135deg, var(--primary) 0%, #6366f1 100%); color: white; padding: 30px 20px 40px; border-radius: 0 0 30px 30px; margin-top: -20px; }
         .profile-content { display: flex; align-items: center; gap: 15px; }
-        .profile-avatar { width: 60px; height: 60px; border-radius: 50%; border: 2px solid white; }
-        
+        .profile-avatar-icon { width: 70px; height: 70px; border-radius: 50%; border: 3px solid white; background-color: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+
+        /* Clock Widget */
+        .clock-widget { background: white; margin-top: -25px; margin-bottom: 20px; padding: 15px; border-radius: 16px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); position: relative; z-index: 10; }
+        #date-display { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; text-transform: capitalize; }
+        #time-display { font-size: 2rem; font-weight: 800; color: var(--primary); line-height: 1; font-variant-numeric: tabular-nums; }
+
+        /* Clock Buttons */
         .clock-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
         .clock-btn { height: 100px; flex-direction: column; font-size: 1rem; }
 
+        /* Tables */
         .table-container { overflow-x: auto; background: white; border-radius: var(--radius-md); border: 1px solid var(--border); }
-        table { width: 100%; border-collapse: collapse; min-width: 900px; } /* Lebar tabel diperbesar */
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; } /* Lebar Proporsional */
         th { background: #F9FAFB; text-align: left; padding: 10px; font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; }
         td { padding: 10px; border-bottom: 1px solid var(--border); font-size: 0.9rem; white-space: nowrap; }
+        .thumb-img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; cursor: pointer; border:1px solid #ddd; transition: 0.2s; }
+        .thumb-img:hover { opacity: 0.8; }
 
+        /* Filter Bar */
+        .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; background: #f9fafb; padding: 10px; border-radius: 8px; border: 1px solid #eee; }
+        .filter-bar input, .filter-bar select { width: auto; min-width: 120px; margin-bottom: 0; }
+
+        /* Footer Login */
+        .login-footer { margin-top: 40px; text-align: center; padding-top: 20px; border-top: 1px solid #E5E7EB; }
+        .login-footer .brand-name { font-size: 1.1rem; font-weight: 700; color: #374151; margin: 0 0 4px 0; }
+        .login-footer .support-text { font-size: 0.75rem; color: #9CA3AF; letter-spacing: 0.5px; margin: 0; }
+
+        /* Modals */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
-        .modal-box { background: white; width: 95%; max-width: 450px; border-radius: 20px; padding: 24px; max-height: 90vh; overflow-y: auto; }
+        .modal-box { background: white; width: 95%; max-width: 550px; border-radius: 20px; padding: 24px; max-height: 90vh; overflow-y: auto; }
 
+        /* Toast */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast { background: white; padding: 12px 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; min-width: 250px; border-left: 5px solid var(--primary); transform: translateX(120%); transition: transform 0.3s; }
         .toast.show { transform: translateX(0); }
@@ -65,42 +84,77 @@
 
         video { width: 100%; height: 250px; background: black; border-radius: 12px; object-fit: cover; transform: scaleX(-1); }
         .input-group { display: flex; gap: 10px; }
-        
-        /* Helper Import */
         .csv-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 5px; line-height: 1.4; background: #f3f4f6; padding: 8px; border-radius: 6px; }
+
+        /* Accordion */
+        .accordion-header { cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f3f4f6; }
+        .accordion-body { padding-top: 15px; background: #f9fafb; border-radius: 8px; margin-top: 10px; padding: 15px; }
+
+        /* PRINT CSS */
+        @media print {
+            body * { visibility: hidden; }
+            .print-area, .print-area * { visibility: visible; }
+            .print-area { position: absolute; left: 0; top: 0; width: 100%; }
+            .no-print { display: none; }
+            .table-container { border: none; }
+            table { width: 100%; font-size: 10pt; }
+            th, td { border: 1px solid #000; white-space: normal; }
+        }
     </style>
 </head>
 <body>
 
     <div id="toast-container"></div>
 
-    <!-- LOGIN -->
+    <!-- VIEW: LOGIN -->
     <section id="view-login" class="container">
         <div style="text-align:center; margin-top: 50px;">
             <img src="https://i.imgur.com/xX4QN18.png" style="width:100px; margin-bottom:20px; border-radius:12px;">
             <h2>Sistem Presensi GMS</h2>
             <p style="color:var(--text-muted); margin-bottom:30px;">Masuk untuk melanjutkan</p>
+            
             <div class="card">
-                <label>ID Pengguna</label>
-                <input type="text" id="login-id" placeholder="Contoh: gms001">
-                <button onclick="app.login()" class="btn btn-primary" style="margin-top:10px;">Masuk</button>
+                <label>Nama Lengkap</label>
+                <input type="text" id="login-name" placeholder="Masukkan Nama Anda" autocomplete="off">
+                
+                <label style="margin-top:15px;">ID Pengguna</label>
+                <div style="position: relative;">
+                    <input type="password" id="login-id" placeholder="Masukkan ID" style="padding-right: 45px;" autocomplete="off">
+                    <div onclick="app.togglePassword()" style="position: absolute; right: 12px; top: 10px; cursor: pointer; color: var(--text-muted);">
+                        <svg id="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        <svg id="eye-off-icon" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                    </div>
+                </div>
+
+                <button onclick="app.login()" class="btn btn-primary" style="margin-top:20px;">Masuk</button>
+            </div>
+
+            <div class="login-footer">
+                <p class="brand-name">Graha Mega Solusindo</p>
+                <p class="support-text">supported by : Klase Auto Graha</p>
             </div>
         </div>
     </section>
 
-    <!-- EMPLOYEE -->
+    <!-- VIEW: EMPLOYEE -->
     <section id="view-employee" class="container hidden">
         <div class="profile-header">
             <div class="profile-content">
-                <img id="emp-avatar" src="" class="profile-avatar">
+                <div class="profile-avatar-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
                 <div>
                     <h2 id="emp-name">Nama User</h2>
                     <small id="emp-role">Karyawan</small>
                 </div>
             </div>
         </div>
+        <div class="clock-widget">
+            <div id="date-display">Senin, 1 Januari 2024</div>
+            <div id="time-display">00:00:00</div>
+        </div>
 
-        <div class="card" style="margin-top:-25px; padding:10px 20px; display:flex; align-items:center; gap:10px;">
+        <div class="card" style="margin-top:-15px; padding:10px 20px; display:flex; align-items:center; gap:10px;">
             <div id="gps-dot" style="width:10px; height:10px; background:#ccc; border-radius:50%;"></div>
             <div style="flex:1;">
                 <div id="gps-status-text" style="font-size:0.85rem; font-weight:600;">Mencari Lokasi...</div>
@@ -117,6 +171,46 @@
             <button onclick="app.openCamera('Pulang')" class="btn btn-danger clock-btn"><span style="font-size:1.5rem;">📤</span>Clock Out</button>
         </div>
 
+        <!-- FORM PENGAJUAN (Dengan Upload Bukti) -->
+        <div class="card" style="padding: 0;">
+            <div class="accordion-header" onclick="document.getElementById('sub-form').classList.toggle('hidden')">
+                <span style="font-weight:600;">📄 Ajukan Izin / Sakit</span>
+                <span>▼</span>
+            </div>
+            <div id="sub-form" class="hidden accordion-body">
+                <label>Jenis Pengajuan</label>
+                <select id="sub-type">
+                    <option value="Sakit">Sakit</option><option value="Izin">Izin</option><option value="Cuti">Cuti</option><option value="Luar Kota">Luar Kota</option>
+                </select>
+                
+                <label>Tanggal Pengajuan</label>
+                <input type="date" id="sub-date">
+
+                <label>Keterangan (Max 100 Karakter)</label>
+                <textarea id="sub-desc" style="font-size:0.9rem;" placeholder="Tulis keterangan..."></textarea>
+                <small id="char-count" style="display:block; margin-bottom:10px; font-size:0.75rem; color:var(--text-muted);">0/100 Karakter</small>
+
+                <!-- UPLOAD BUKTI -->
+                <label>Upload Bukti (Foto/Optional)</label>
+                <input type="file" id="sub-proof" accept="image/*">
+                
+                <button onclick="app.submitPengajuan()" class="btn btn-primary btn-sm">Kirim Pengajuan & WA Admin</button>
+            </div>
+        </div>
+
+        <!-- RIWAYAT PENGAJUAN -->
+        <div class="card" style="padding: 0;">
+            <div class="accordion-header" onclick="document.getElementById('sub-history').classList.toggle('hidden')">
+                <span style="font-weight:600;">📑 Riwayat Pengajuan</span>
+                <span>▼</span>
+            </div>
+            <div id="sub-history" class="accordion-body">
+                <div id="history-list-sub">
+                    <div style="text-align:center; padding:10px; color:#999;">Memuat riwayat...</div>
+                </div>
+            </div>
+        </div>
+
         <div class="card">
             <h3>Riwayat Absen</h3>
             <div id="history-list-absen" style="margin-top:10px;">
@@ -126,62 +220,83 @@
         <button onclick="app.logout()" class="btn btn-outline">Keluar</button>
     </section>
 
-    <!-- ADMIN -->
+    <!-- VIEW: ADMIN -->
     <section id="view-admin" class="container admin hidden">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;" class="no-print">
             <h2>Admin Dashboard</h2>
             <button onclick="app.logout()" class="btn btn-danger btn-sm">Logout</button>
         </div>
 
         <!-- Tabs -->
-        <div style="display:flex; gap:10px; margin-bottom:20px;">
+        <div style="display:flex; gap:10px; margin-bottom:20px;" class="no-print">
             <button onclick="app.switchTab('employees', this)" class="btn btn-primary btn-sm" style="background:var(--primary);">Data Karyawan</button>
             <button onclick="app.switchTab('attendance', this)" class="btn btn-outline btn-sm">Rekap Absen</button>
+            <button onclick="app.switchTab('submissions', this)" class="btn btn-outline btn-sm">Pengajuan</button>
             <button onclick="app.refreshData()" class="btn btn-success btn-sm">🔄 Refresh</button>
         </div>
 
         <!-- Tab Employees -->
-        <div id="tab-employees">
+        <div id="tab-employees" class="print-area">
             <div class="card" style="padding:0; overflow:hidden;">
-                <div style="padding:15px; background:#f9fafb; border-bottom:1px solid #eee; display:flex; gap:10px; flex-wrap:wrap;">
+                <!-- Filters -->
+                <div class="filter-bar no-print">
+                    <input id="filter-emp-id" placeholder="Cari ID..." onkeyup="app.filterTable('admin-emp-table', 0, this.value)">
+                    <input id="filter-emp-name" placeholder="Cari Nama..." onkeyup="app.filterTable('admin-emp-table', 1, this.value)">
+                    <select id="filter-emp-loc" onchange="app.filterTable('admin-emp-table', 4, this.value)">
+                        <option value="">Semua Lokasi</option>
+                    </select>
+                    <button onclick="window.print()" class="btn btn-print btn-sm">🖨️ Print</button>
+                </div>
+
+                <div style="padding:15px; background:#f9fafb; border-bottom:1px solid #eee; display:flex; gap:10px; flex-wrap:wrap;" class="no-print">
                     <button onclick="app.showAddUserModal()" class="btn btn-primary btn-sm">+ Tambah Manual</button>
-                    
-                    <!-- Tombol Import -->
                     <button onclick="document.getElementById('import-csv').click()" class="btn btn-success btn-sm">📂 Import CSV</button>
                     <input type="file" id="import-csv" accept=".csv" style="display:none" onchange="app.handleImport(this)">
                 </div>
                 <div class="table-container">
                     <table id="admin-emp-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nama</th>
-                                <th>Role</th>
-                                <th>Lokasi Kerja</th>
-                                <th>Mode GPS</th>
-                                <th>Target (Lat, Lng)</th>
-                                <th>Radius</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>ID</th><th>Nama</th><th>Role</th><th>Lokasi</th><th>Mode GPS</th><th>Lat, Lng</th><th>Radius</th><th>Aksi</th></tr></thead>
                         <tbody></tbody>
                     </table>
-                </div>
-                <div style="padding:10px 15px; border-top:1px solid #eee;">
-                    <div class="csv-hint">
-                        <strong>Format CSV:</strong> ID, Name, Role, WA, WorkLocation, GPSMode, TargetLat, TargetLng, Radius<br>
-                        <em>Contoh:</em> K001, Budi, employee, 6281..., Kantor, bebas, 0, 0, 0
-                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Tab Attendance -->
-        <div id="tab-attendance" class="hidden">
+                    <div id="tab-attendance" class="print-area hidden">
+                    <div class="card" style="padding:0; overflow:hidden;">
+                         <!-- FILTERS & BUTTONS (UPDATED) -->
+                         <div class="filter-bar no-print">
+                            <input type="date" id="filter-att-date" placeholder="Filter Tanggal" onchange="app.refreshData()">
+                            <input type="month" id="filter-att-month" placeholder="Filter Bulan" onchange="app.refreshData()">
+                            <button onclick="window.print()" class="btn btn-print btn-sm">🖨️ Print</button>
+                            <button onclick="app.downloadExcel()" class="btn btn-success btn-sm">📥 Download Excel</button>
+                        </div>
+                        <div class="table-container">
+                            <table id="admin-att-table">
+                                <thead><tr><th>Tanggal</th><th>Nama</th><th>Clock In</th><th>Clock Out</th><th>Lokasi Terakhir</th><th>Foto</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+        <!-- Tab Submissions -->
+        <div id="tab-submissions" class="print-area hidden">
             <div class="card" style="padding:0; overflow:hidden;">
+                <!-- Filters -->
+                <div class="filter-bar no-print">
+                    <select id="filter-sub-status" onchange="app.refreshData()">
+                        <option value="">Semua Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+                    <button onclick="window.print()" class="btn btn-print btn-sm">🖨️ Print</button>
+                </div>
                 <div class="table-container">
-                    <table id="admin-att-table">
-                        <thead><tr><th>Waktu</th><th>Nama</th><th>Tipe</th><th>Lat, Lng</th></tr></thead>
+                    <table id="admin-sub-table">
+                        <thead><tr><th>Tgl</th><th>Nama</th><th>Tipe</th><th>Keterangan</th><th>Bukti</th><th>Status</th><th>Aksi</th></tr></thead>
                         <tbody></tbody>
                     </table>
                 </div>
@@ -189,18 +304,19 @@
         </div>
     </section>
 
-    <!-- MODAL ADD USER -->
+    <!-- MODALS -->
     <div id="user-modal" class="modal-overlay">
         <div class="modal-box">
-            <h3 style="margin-bottom:15px;">Tambah Karyawan</h3>
-            <label>ID Karyawan</label><input type="text" id="new-id">
+            <h3 id="user-modal-title" style="margin-bottom:15px;">Tambah Karyawan</h3>
+            <input type="hidden" id="old-id">
+            <label>ID Karyawan</label><input type="text" id="new-id" readonly>
             <label>Nama Lengkap</label><input type="text" id="new-name">
             <label>Nomor WA</label><input type="text" id="new-wa">
             <label>Role</label>
             <select id="new-role"><option value="employee">Employee</option><option value="admin">Admin</option></select>
             
             <div style="margin:15px 0; border-top:1px solid #eee; padding-top:10px;">
-                <label style="color:var(--primary);">Pengaturan Lokasi</label>
+                <label style="color:var(--primary);">Pengaturan Lokasi & GPS</label>
                 <label>Nama Lokasi</label><input type="text" id="new-workloc">
                 <label>Mode GPS</label>
                 <select id="new-gpsmode" onchange="app.toggleGpsInputs()">
@@ -219,12 +335,11 @@
             </div>
             <div class="input-group">
                 <button onclick="document.getElementById('user-modal').style.display='none'" class="btn btn-outline">Batal</button>
-                <button onclick="app.saveNewUser()" class="btn btn-primary">Simpan</button>
+                <button id="btn-save-user" onclick="app.saveNewUser()" class="btn btn-primary">Simpan</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL CAMERA -->
     <div id="camera-modal" class="modal-overlay">
         <div class="modal-box" style="text-align:center;">
             <h3 id="cam-action">Clock In</h3>
@@ -238,7 +353,7 @@
 
     <!-- JAVASCRIPT -->
     <script>
-        const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVgWSZgEEDM90WrzOe8CyGVhDFXprv6fabEYq5zG1f857WkAfDh9QBW0Li3atxcBLF/exec'; 
+        const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyb-7VzxzDJijNowutEaqUUtH7021VAN9PHaM1XVqyLLZvMGgPCf655OnuyuDOEmb_w/exec'; 
 
         const $ = id => document.getElementById(id);
 
@@ -252,7 +367,6 @@
             setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, 3000);
         }
 
-        // Haversine Formula
         function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
             var R = 6371; var dLat = deg2rad(lat2-lat1); var dLon = deg2rad(lon2-lon1);
             var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2);
@@ -273,23 +387,42 @@
                 }
             },
 
+            togglePassword: function() {
+                const input = $('login-id');
+                if (input.type === "password") {
+                    input.type = "text"; $('eye-icon').classList.add('hidden'); $('eye-off-icon').classList.remove('hidden');
+                } else {
+                    input.type = "password"; $('eye-icon').classList.remove('hidden'); $('eye-off-icon').classList.add('hidden');
+                }
+            },
+
             fetchUsers: function(cb) {
                 if(!APP_SCRIPT_URL.includes('http')) return;
                 fetch(`${APP_SCRIPT_URL}?action=getUsers`)
                 .then(r => r.json())
                 .then(res => {
                     this.data.users = res.users || [];
+                    // Populate Filter Options
+                    const locs = [...new Set(this.data.users.map(u => u.WorkLocation).filter(x=>x))];
+                    $('filter-emp-loc').innerHTML = '<option value="">Semua Lokasi</option>' + locs.map(l=>`<option value="${l}">${l}</option>`).join('');
                     if(cb) cb();
                 });
             },
 
             login: function() {
-                const id = $('login-id').value;
+                const id = $('login-id').value.trim();
+                const name = $('login-name').value.trim();
+                if(!name || !id) { showToast("Nama dan ID harus diisi!", "error"); return; }
                 const user = this.data.users.find(u => u.ID == id || u.id == id);
                 if(user) {
-                    this.data.currentUser = user;
-                    sessionStorage.setItem('gms_user', JSON.stringify(user));
-                    this.route();
+                    if (user.Name.toLowerCase() === name.toLowerCase()) {
+                        this.data.currentUser = user;
+                        sessionStorage.setItem('gms_user', JSON.stringify(user));
+                        showToast(`Selamat datang, ${user.Name}`);
+                        this.route();
+                    } else {
+                        showToast("Nama tidak cocok dengan ID tersebut!", "error");
+                    }
                 } else {
                     showToast("ID Tidak ditemukan", "error");
                 }
@@ -302,23 +435,36 @@
                 if(this.data.currentUser.Role === 'admin') {
                     $('view-admin').classList.remove('hidden');
                     this.renderEmployees();
+                    this.refreshData();
                 } else {
                     $('view-employee').classList.remove('hidden');
-                    $('emp-name').textContent = this.data.currentUser.Name;
-                    $('emp-role').textContent = this.data.currentUser.WorkLocation || "Karyawan";
-                    $('emp-avatar').src = `https://picsum.photos/seed/${this.data.currentUser.ID}/100/100`;
-                    
-                    if(this.data.currentUser.GPSMode === 'terkunci') {
-                        $('gps-rule-info').classList.remove('hidden');
-                        $('rule-radius').textContent = this.data.currentUser.Radius;
-                        $('rule-loc').textContent = this.data.currentUser.WorkLocation || "Titik Terkunci";
-                    } else {
-                        $('gps-rule-info').classList.add('hidden');
-                    }
-                    this.getLocation();
+                    this.initEmployeeDashboard();
                 }
             },
 
+            // --- EMPLOYEE ---
+            updateClock: function() {
+                const now = new Date();
+                document.getElementById('date-display').textContent = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                document.getElementById('time-display').textContent = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+            },
+
+            initEmployeeDashboard: function() {
+                const u = this.data.currentUser;
+                $('emp-name').textContent = u.Name;
+                $('emp-role').textContent = u.WorkLocation || "Karyawan";
+                if(u.GPSMode === 'terkunci') {
+                    $('gps-rule-info').classList.remove('hidden');
+                    $('rule-radius').textContent = u.Radius;
+                    $('rule-loc').textContent = u.WorkLocation || "Titik Terkunci";
+                } else {
+                    $('gps-rule-info').classList.add('hidden');
+                }
+                this.updateClock(); setInterval(() => this.updateClock(), 1000);
+                this.getLocation();
+                this.loadMySubmissions();
+            },
+            
             getLocation: function() {
                 if(navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(pos => {
@@ -333,6 +479,94 @@
                 }
             },
 
+            // --- SUBMISSION (With Auto WA & Upload) ---
+            submitPengajuan: function() {
+                const type = $('sub-type').value;
+                const date = $('sub-date').value;
+                const desc = $('sub-desc').value;
+                const fileInput = $('sub-proof');
+                
+                if(!date) return showToast("Harap pilih tanggal!", "error");
+                if(desc.length > 100) return showToast(`!Keterangan Terlalu Panjang Max 100 kar. (${desc.length})`, "error");
+
+                const process = (base64Proof) => {
+                    const payload = {
+                        action: 'submission',
+                        userId: this.data.currentUser.ID,
+                        name: this.data.currentUser.Name,
+                        subType: type,
+                        date: date,
+                        desc: desc,
+                        proof: base64Proof
+                    };
+
+                    fetch(APP_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
+                    .then(() => {
+                        showToast("Pengajuan terkirim!");
+                        $('sub-form').classList.add('hidden');
+                        $('sub-desc').value = "";
+                        $('sub-proof').value = "";
+                        $('char-count').textContent = "0/100 Karakter";
+                        this.loadMySubmissions();
+
+                        // AUTO WA KIRIM PESAN
+                        const admin = this.data.users.find(u => u.Role === 'admin');
+                        if(admin && admin.WA) {
+                            const text = `*PENGAJUAN BARU*%0A%0ANama: ${this.data.currentUser.Name}%0ATipe: ${type}%0ATgl: ${date}%0AIsi: ${desc}`;
+                            window.open(`https://wa.me/${admin.WA}?text=${text}`, '_blank');
+                        } else {
+                            showToast("Admin WA tidak ditemukan", "error");
+                        }
+                    });
+                };
+
+                // Handle Upload
+                if(fileInput.files && fileInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => process(e.target.result);
+                    reader.readAsDataURL(fileInput.files[0]);
+                } else {
+                    process(null);
+                }
+            },
+
+            loadMySubmissions: function() {
+                const list = $('history-list-sub');
+                fetch(`${APP_SCRIPT_URL}?action=getData`).then(r=>r.json()).then(res => {
+                    if(!res.submissions) return;
+                    const mySubs = res.submissions.filter(s => s.UserID === this.data.currentUser.ID).reverse();
+                    
+                    if(mySubs.length === 0) { list.innerHTML = '<div style="text-align:center;">Belum ada pengajuan.</div>'; return; }
+
+                    list.innerHTML = mySubs.map(row => {
+                        let statusBadge = '';
+                        let actionBtn = '';
+
+                        if(row.Status === 'Pending') statusBadge = '<span style="color:#F59E0B; font-weight:bold;">⏳ Pending</span>';
+                        if(row.Status === 'Approved') statusBadge = '<span style="color:#10B981; font-weight:bold;">✅ Disetujui</span>';
+                        if(row.Status === 'Rejected') {
+                            statusBadge = '<span style="color:#EF4444; font-weight:bold;">❌ Ditolak</span>';
+                            actionBtn = `<div style="margin-top:8px; background:#fee2e2; color:#991b1b; padding:8px; border-radius:4px; font-size:0.8rem;"><b>Alasan:</b> ${row.Reason || '-'}</div>`;
+                        }
+
+                        const proofLink = row.ProofURL && row.ProofURL !== "No Proof" ? `<a href="${row.ProofURL}" target="_blank" style="color:blue; font-size:0.8rem;">Lihat Bukti</a>` : '';
+
+                        return `
+                            <div style="padding:12px 0; border-bottom:1px solid #eee;">
+                                <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--text-muted);">
+                                    <span>${row.Date}</span>
+                                    ${statusBadge}
+                                </div>
+                                <div style="font-weight:600; margin:4px 0; color:var(--text-main);">${row.Type} ${proofLink}</div>
+                                <div style="font-size:0.85rem; color:#555; line-height:1.4;">${row.Desc}</div>
+                                ${actionBtn}
+                            </div>
+                        `;
+                    }).join('');
+                });
+            },
+
+            // --- ATTENDANCE (Drive Upload) ---
             openCamera: function(type) {
                 this.currentAction = type;
                 $('cam-action').textContent = type === 'Masuk' ? 'Clock In' : 'Clock Out';
@@ -348,11 +582,8 @@
 
             takePhoto: function() {
                 if(!this.data.currentLocation) return showToast("Aktifkan GPS dulu!", "error");
-
-                // Validasi GPS Terkunci
                 if(this.data.currentUser.GPSMode === 'terkunci') {
-                    const u = this.data.currentUser;
-                    const cur = this.data.currentLocation;
+                    const u = this.data.currentUser; const cur = this.data.currentLocation;
                     if(!u.TargetLat || !u.TargetLng) { showToast("Koordinat kantor belum disetting admin.", "error"); return; }
                     const distance = getDistanceFromLatLonInM(cur.lat, cur.lng, parseFloat(u.TargetLat), parseFloat(u.TargetLng));
                     if(distance > parseFloat(u.Radius)) {
@@ -360,7 +591,6 @@
                         return;
                     }
                 }
-
                 const video = $('webcam');
                 const canvas = document.createElement('canvas');
                 canvas.width = video.videoWidth; canvas.height = video.videoHeight;
@@ -386,97 +616,86 @@
                 });
             },
 
-            // --- ADMIN & IMPORT LOGIC ---
+            // --- ADMIN ---
             switchTab: function(tab, btn) {
                 document.querySelectorAll('.btn').forEach(b => { if(!b.classList.contains('btn-primary')) b.classList.add('btn-outline'); });
                 btn.classList.remove('btn-outline'); btn.classList.add('btn-primary');
                 $('tab-employees').classList.add('hidden');
                 $('tab-attendance').classList.add('hidden');
+                $('tab-submissions').classList.add('hidden');
                 $(`tab-${tab}`).classList.remove('hidden');
             },
 
+            // 5. EDIT USER & RENDER
             renderEmployees: function() {
                 const tbody = $('admin-emp-table').querySelector('tbody');
                 tbody.innerHTML = this.data.users.map(u => `
                     <tr>
-                        <td>${u.ID}</td>
-                        <td>${u.Name}</td>
-                        <td>${u.Role}</td>
-                        <td>${u.WorkLocation || '-'}</td>
+                        <td>${u.ID}</td><td>${u.Name}</td><td>${u.Role}</td><td>${u.WorkLocation || '-'}</td>
                         <td><span style="padding:2px 6px; border-radius:4px; background:${u.GPSMode==='terkunci'?'#fee2e2':'#d1fae5'}; color:${u.GPSMode==='terkunci'?'red':'green'}">${u.GPSMode || 'bebas'}</span></td>
-                        <td>${u.TargetLat || 0}, ${u.TargetLng || 0}</td>
-                        <td>${u.Radius || 0}m</td>
-                        <td><button class="btn btn-danger btn-sm" onclick="app.deleteUser('${u.ID}')">Hapus</button></td>
+                        <td>${u.TargetLat || 0}, ${u.TargetLng || 0}</td><td>${u.Radius || 0}m</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="app.openEditModal('${u.ID}')">Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="app.deleteUser('${u.ID}')">Hapus</button>
+                        </td>
                     </tr>
                 `).join('');
             },
 
-            // --- FUNGSI IMPORT CSV ---
-            handleImport: function(input) {
-                const file = input.files[0];
-                if (!file) return;
-
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const text = e.target.result;
-                    // Parse CSV sederhana
-                    const rows = text.split('\n').map(row => row.trim()).filter(row => row.length > 0);
-                    
-                    if (rows.length < 2) { showToast("File CSV kosong atau salah format", "error"); return; }
-
-                    // Asumsi baris pertama adalah Header, skip index 0
-                    // Format: ID, Name, Role, WA, WorkLocation, GPSMode, TargetLat, TargetLng, Radius
-                    const dataToImport = [];
-                    
-                    for(let i = 1; i < rows.length; i++) {
-                        const cols = rows[i].split(',');
-                        if(cols.length >= 2) { // Minimal ada ID dan Nama
-                            // Bersihkan data dan handle kolom kosong
-                            const cleanRow = cols.map(c => c.trim() || ""); 
-                            // Jika ada kolom kosong di tengah, kita isi 0 atau string kosong sesuai tipe
-                            // Namun untuk APPEND di GAS, kita kirim string semua, nanti GAS handle.
-                            dataToImport.push(cleanRow);
-                        }
-                    }
-
-                    if(dataToImport.length > 0) {
-                        showToast(`Mengimport ${dataToImport.length} karyawan...`);
-                        app.sendImportData(dataToImport);
-                    } else {
-                        showToast("Tidak ada data valid ditemukan", "error");
-                    }
-                };
-                reader.readAsText(file);
-                // Reset input agar bisa pilih file sama lagi jika perlu
-                input.value = ""; 
+            openEditModal: function(id) {
+                const user = this.data.users.find(u => u.ID == id);
+                if(!user) return;
+                $('user-modal-title').textContent = "Edit Karyawan";
+                $('old-id').value = user.ID;
+                $('new-id').value = user.ID;
+                $('new-name').value = user.Name;
+                $('new-wa').value = user.WA || "";
+                $('new-role').value = user.Role;
+                $('new-workloc').value = user.WorkLocation || "";
+                $('new-gpsmode').value = user.GPSMode || "bebas";
+                $('new-lat').value = user.TargetLat || "";
+                $('new-lng').value = user.TargetLng || "";
+                $('new-radius').value = user.Radius || 100;
+                
+                this.toggleGpsInputs();
+                $('btn-save-user').onclick = () => app.saveEditUser();
+                $('user-modal').style.display = 'flex';
             },
 
-            sendImportData: function(dataArray) {
+            saveEditUser: function() {
                 const payload = {
-                    action: 'importUsers',
-                    users: dataArray
+                    action: 'editUser',
+                    oldId: $('old-id').value,
+                    id: $('new-id').value, name: $('new-name').value, role: $('new-role').value, wa: $('new-wa').value,
+                    workLocation: $('new-workloc').value, gpsMode: $('new-gpsmode').value,
+                    targetLat: $('new-lat').value, targetLng: $('new-lng').value, radius: $('new-radius').value
                 };
-
                 fetch(APP_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
                 .then(() => {
-                    showToast("Import Berhasil! Refreshing data...", "success");
-                    setTimeout(() => {
-                        app.refreshData();
-                    }, 1000);
-                })
-                .catch(err => {
-                    console.error(err);
-                    showToast("Gagal Import. Cek format CSV.", "error");
+                    showToast("User Diperbarui");
+                    $('user-modal').style.display = 'none';
+                    this.fetchUsers(() => { this.renderEmployees(); this.refreshData(); });
                 });
             },
-            // -------------------------
 
-            showAddUserModal: function() { $('user-modal').style.display = 'flex'; },
+            showAddUserModal: function() {
+                $('user-modal-title').textContent = "Tambah Karyawan";
+                $('old-id').value = "";
+                $('new-id').readOnly = false;
+                $('new-id').value = ""; $('new-name').value = ""; $('new-wa').value = "";
+                $('new-role').value = "employee"; $('new-workloc').value = "";
+                $('new-gpsmode').value = "bebas"; $('new-lat').value = ""; $('new-lng').value = ""; $('new-radius').value = 100;
+                this.toggleGpsInputs();
+                $('btn-save-user').onclick = () => app.saveNewUser();
+                $('user-modal').style.display = 'flex';
+            },
+
             toggleGpsInputs: function() {
                 const mode = $('new-gpsmode').value;
                 if(mode === 'terkunci') $('gps-inputs').classList.remove('hidden');
                 else $('gps-inputs').classList.add('hidden');
             },
+
             getCurrentLocForAdmin: function() {
                 if(navigator.geolocation) {
                     $('new-lat').value = "Mencari...";
@@ -486,6 +705,7 @@
                     });
                 }
             },
+
             saveNewUser: function() {
                 const payload = {
                     action: 'addUser',
@@ -497,34 +717,151 @@
                 .then(() => {
                     showToast("User Disimpan");
                     $('user-modal').style.display = 'none';
-                    this.fetchUsers(() => this.renderEmployees());
+                    this.fetchUsers(() => { this.renderEmployees(); this.refreshData(); });
                 });
             },
+
             deleteUser: function(id) {
                 if(!confirm("Hapus user ini?")) return;
                 fetch(APP_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({action:'deleteUser', id}) })
                 .then(() => {
                     showToast("User Dihapus");
-                    this.fetchUsers(() => this.renderEmployees());
+                    this.fetchUsers(() => { this.renderEmployees(); this.refreshData(); });
                 });
             },
+
+            // 6. FILTER & RENDER TABLES
+            filterTable: function(tableId, colIndex, val) {
+                const table = document.getElementById(tableId);
+                const tr = table.getElementsByTagName("tr");
+                val = val.toUpperCase();
+                for (let i = 1; i < tr.length; i++) {
+                    let td = tr[i].getElementsByTagName("td")[colIndex];
+                    if (td) {
+                        let txtValue = td.textContent || td.innerText;
+                        tr[i].style.display = txtValue.toUpperCase().indexOf(val) > -1 ? "" : "none";
+                    }
+                }
+            },
+			// --- FITUR DOWNLOAD EXCEL ---
+            downloadExcel: function() {
+                const table = document.getElementById('admin-att-table');
+                // Konversi tabel HTML menjadi Worksheet Excel menggunakan SheetJS
+                const wb = XLSX.utils.table_to_book(table, {sheet: "Rekap Absen"});
+                XLSX.writeFile(wb, 'Rekap_Absen.xlsx');
+            },
+
+            renderSubmissions: function(data) {
+                const tbody = $('admin-sub-table').querySelector('tbody');
+                if(!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Belum ada pengajuan.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = data.map(row => {
+                    const proofImg = (row.ProofURL && row.ProofURL !== "No Proof") 
+                        ? `<a href="${row.ProofURL}" target="_blank"><img src="${row.ProofURL}" class="thumb-img"></a>` 
+                        : '-';
+                    
+                    const statusColor = row.Status==='Approved'?'green':(row.Status==='Rejected'?'red':'orange');
+
+                    // 7. TOLAK DENGAN ALASAN
+                    const actions = (row.Status === 'Pending') ? `
+                        <button class="btn btn-success btn-sm" onclick="app.updateSubmission('${row.UserID}', '${row.Date}', '${row.Name}', 'Approved')">Setuju</button>
+                        <button class="btn btn-danger btn-sm" onclick="app.rejectSubmission('${row.UserID}', '${row.Date}', '${row.Name}')">Tolak</button>
+                    ` : (row.Status === 'Rejected' ? `<small>${row.Reason||'-'}</small>` : '-');
+
+                    return `
+                    <tr>
+                        <td>${row.Date}</td><td>${row.Name}</td><td>${row.Type}</td>
+                        <td>${row.Desc.substring(0, 20)}...</td>
+                        <td>${proofImg}</td>
+                        <td><span style="color:${statusColor}; font-weight:bold;">${row.Status}</span></td>
+                        <td>${actions}</td>
+                    </tr>
+                `}).join('');
+            },
+
+            updateSubmission: function(userId, date, name, status) {
+                if(!confirm(`Ubah status menjadi ${status}?`)) return;
+                fetch(APP_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'updateSubmission', userId, date, name, newStatus: status, reason: '' }) })
+                .then(() => { showToast("Status diperbarui"); this.refreshData(); });
+            },
+
+            rejectSubmission: function(userId, date, name) {
+                const reason = prompt("Masukkan alasan penolakan:");
+                if(reason !== null && reason !== "") {
+                    fetch(APP_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'updateSubmission', userId, date, name, newStatus: 'Rejected', reason }) })
+                    .then(() => { showToast("Status diperbarui"); this.refreshData(); });
+                }
+            },
+
             refreshData: function() {
                 this.fetchUsers(() => this.renderEmployees());
                 fetch(`${APP_SCRIPT_URL}?action=getData`).then(r=>r.json()).then(res => {
-                    const tbody = $('admin-att-table').querySelector('tbody');
-                    if(res.attendance) {
-                        tbody.innerHTML = res.attendance.map(row => `
-                            <tr>
-                                <td>${new Date(row.Timestamp).toLocaleString()}</td>
-                                <td>${row.Name}</td>
-                                <td>${row.Type}</td>
-                                <td>${row.Lat}, ${row.Lng}</td>
-                            </tr>`).join('');
-                    }
+                    // Attendance (With Filters)
+                    // Attendance (Updated Logic)
+                let attData = res.attendance || [];
+                const fDate = $('filter-att-date').value;
+                const fMonth = $('filter-att-month').value;
+                
+                if(fDate) attData = attData.filter(r => new Date(r.Date).toISOString().split('T')[0] === fDate);
+                if(fMonth) attData = attData.filter(r => new Date(r.Date).toISOString().substring(0, 7) === fMonth);
+
+                $('admin-att-table').querySelector('tbody').innerHTML = attData.map(row => {
+                    const dateStr = new Date(row.Date).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year:'2-digit'});
+                    const inTime = row.ClockIn ? new Date(row.ClockIn).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '-';
+                    const outTime = row.ClockOut ? new Date(row.ClockOut).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '-';
+                    const loc = row.Lat ? `${row.Lat}, ${row.Lng}` : '-';
+                    const photo = (row.PhotoURL && row.PhotoURL !== 'No Photo') 
+                                ? `<a href="${row.PhotoURL}" target="_blank"><img src="${row.PhotoURL}" class="thumb-img"></a>` 
+                                : '-';
+                    
+                    return `
+                    <tr>
+                        <td>${dateStr}</td>
+                        <td>${row.Name}</td>
+                        <td>${inTime}</td>
+                        <td>${outTime}</td>
+                        <td>${loc}</td>
+                        <td>${photo}</td>
+                    </tr>
+                `;
+                }).join('');
+
+                    // Submissions (With Filters)
+                    let subData = res.submissions || [];
+                    const fStatus = $('filter-sub-status').value;
+                    if(fStatus) subData = subData.filter(r => r.Status === fStatus);
+
+                    this.renderSubmissions(subData);
                 });
+            },
+
+            // --- IMPORT CSV ---
+            handleImport: function(input) {
+                const file = input.files[0]; if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const rows = e.target.result.split('\n').map(r => r.trim()).filter(r => r.length > 0);
+                    if (rows.length < 2) { showToast("File CSV salah", "error"); return; }
+                    const data = [];
+                    for(let i = 1; i < rows.length; i++) {
+                        const cols = rows[i].split(',');
+                        if(cols.length >= 2) data.push(cols.map(c => c.trim() || ""));
+                    }
+                    if(data.length > 0) app.sendImportData(data);
+                };
+                reader.readAsText(file); input.value = ""; 
+            },
+            sendImportData: function(dataArray) {
+                const payload = { action: 'importUsers', users: dataArray };
+                fetch(APP_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
+                .then(() => { showToast("Import Berhasil!"); this.refreshData(); })
+                .catch(err => showToast("Gagal Import.", "error"));
             }
         };
 
+        $('sub-desc').addEventListener('input', function(e) { $('char-count').textContent = e.target.value.length + "/100 Karakter"; });
         document.addEventListener('DOMContentLoaded', () => app.init());
     </script>
 </body>
