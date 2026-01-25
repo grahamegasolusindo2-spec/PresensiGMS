@@ -353,7 +353,7 @@
 
     <!-- JAVASCRIPT -->
     <script>
-        const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyb-7VzxzDJijNowutEaqUUtH7021VAN9PHaM1XVqyLLZvMGgPCf655OnuyuDOEmb_w/exec'; 
+        const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5c5TuUjIP7KRH_npf4tysycgk-KQwN4pr54BAO5jg0a0fR70yXDNKdrFZ7W0c8Amk/exec'; 
 
         const $ = id => document.getElementById(id);
 
@@ -453,6 +453,7 @@
                 const u = this.data.currentUser;
                 $('emp-name').textContent = u.Name;
                 $('emp-role').textContent = u.WorkLocation || "Karyawan";
+                
                 if(u.GPSMode === 'terkunci') {
                     $('gps-rule-info').classList.remove('hidden');
                     $('rule-radius').textContent = u.Radius;
@@ -460,9 +461,19 @@
                 } else {
                     $('gps-rule-info').classList.add('hidden');
                 }
-                this.updateClock(); setInterval(() => this.updateClock(), 1000);
+                
+                // Jam & GPS
+                this.updateClock(); 
+                setInterval(() => this.updateClock(), 1000);
                 this.getLocation();
-                this.loadMySubmissions();
+				this.checkTodayStatus();
+            },
+
+                // --- TAMBAHKAN INI (AUTO REFRESH PENGAJUAN) ---
+                this.loadMySubmissions(); // Load pertama
+                // Cek update setiap 30 detik
+                setInterval(() => this.loadMySubmissions(), 30000); 
+                // ---------------------------------------------
             },
             
             getLocation: function() {
@@ -477,6 +488,41 @@
                         $('gps-dot').style.background = "var(--danger)";
                     });
                 }
+            },
+			
+			// --- CHECK STATUS HARI INI (CEGAH 2X ABSEN) ---
+            checkTodayStatus: function() {
+                fetch(${APP_SCRIPT_URL}?action=getData)
+                .then(r => r.json())
+                .then(res => {
+                    if(res.attendance) {
+                        const todayStr = new Date().toISOString().split('T')[0];
+                        // Cari apakah ada data hari ini untuk user ini
+                        const todayAtt = res.attendance.find(r => r.Date.split('T')[0] === todayStr && r.UserID === this.data.currentUser.ID);
+                        
+                        // Disable tombol jika sudah absen
+                        if(todayAtt) {
+                            if(todayAtt.ClockIn) {
+                                // Sudah Masuk -> Matikan tombol Masuk
+                                const btnIn = document.querySelector("button[onclick*=\"Masuk\"]");
+                                if(btnIn) {
+                                    btnIn.disabled = true;
+                                    btnIn.style.opacity = "0.5";
+                                    btnIn.textContent = "Sudah Masuk";
+                                }
+                            }
+                            if(todayAtt.ClockOut) {
+                                // Sudah Pulang -> Matikan tombol Pulang
+                                const btnOut = document.querySelector("button[onclick*=\"Pulang\"]");
+                                if(btnOut) {
+                                    btnOut.disabled = true;
+                                    btnOut.style.opacity = "0.5";
+                                    btnOut.textContent = "Sudah Pulang";
+                                }
+                            }
+                        }
+                    }
+                });
             },
 
             // --- SUBMISSION (With Auto WA & Upload) ---
