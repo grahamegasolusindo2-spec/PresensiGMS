@@ -8,98 +8,356 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <style>
-        /* --- CSS VARIABLES & RESET --- */
-        :root {
-            --primary: #051650; --primary-dark: #4338ca;
-            --success: #10B981; --danger: #EF4444; --warning: #F59E0B;
-            --bg-app: #F3F4F6; --surface: #FFFFFF;
-            --text-main: #111827; --text-muted: #6B7280;
-            --border: #E5E7EB; --radius-md: 16px;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg-app); color: var(--text-main); font-family: 'Inter', sans-serif; padding-bottom: 80px; }
-        .hidden { display: none !important; }
+        /* --- MODERN & PROFESSIONAL UI SYSTEM --- */
+    :root {
+        --primary: #0f172a; /* Slate Dark - Lebih elegan */
+        --primary-hover: #1e293b;
+        --primary-light: #334155;
+        --accent: #3b82f6; /* Biru Cerah untuk Aksi */
+        --success: #10b981;
+        --success-light: #d1fae5;
+        --danger: #ef4444;
+        --danger-light: #fee2e2;
+        --warning: #f59e0b;
         
-        /* Layout */
-        .container { max-width: 480px; margin: 0 auto; padding: 0 20px; width: 100%; }
-        .container.admin { max-width: 1200px; } /* Lebar Admin ditambah */
+        --bg-app: #f8fafc; /* Abu sangat muda bersih */
+        --bg-pattern: radial-gradient(#e2e8f0 1px, transparent 1px); /* Pola titik halus */
+        --surface: #ffffff;
+        
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --text-light: #94a3b8;
+        
+        --border: #e2e8f0;
+        --radius-sm: 8px;
+        --radius-md: 16px;
+        --radius-lg: 24px;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-float: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        --glass-bg: rgba(255, 255, 255, 0.85);
+    }
 
-        /* Components */
-        .card { background: var(--surface); border-radius: var(--radius-md); padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .btn { padding: 10px 20px; border: none; border-radius: 12px; font-weight: 600; font-size: 0.95rem; cursor: pointer; width: 100%; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn:active { transform: scale(0.98); }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-success { background: var(--success); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-outline { background: white; border: 1px solid var(--border); color: var(--text-main); }
-        .btn-sm { padding: 6px 12px; font-size: 0.8rem; width: auto; display: inline-flex; }
-        .btn-print { background: var(--text-main); color: white; width: auto; }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    
+    body { 
+        background-color: var(--bg-app); 
+        background-image: var(--bg-pattern);
+        background-size: 24px 24px;
+        color: var(--text-main); 
+        font-family: 'Inter', sans-serif; 
+        padding-bottom: 100px; 
+        -webkit-font-smoothing: antialiased;
+    }
+    
+    .hidden { display: none !important; }
+    
+    /* LAYOUT & CONTAINERS */
+    .container { max-width: 480px; margin: 0 auto; padding: 0 24px; width: 100%; }
+    .container.admin { max-width: 1100px; }
 
-        /* Inputs */
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-size: 0.9rem; }
-        input:focus, textarea:focus { border-color: var(--primary); outline: none; }
-        label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+    /* CARDS - Glassy Look */
+    .card { 
+        background: var(--surface); 
+        border-radius: var(--radius-md); 
+        padding: 24px; 
+        box-shadow: var(--shadow-sm); 
+        margin-bottom: 24px; 
+        border: 1px solid var(--border); /* Border tipis profesional */
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    /* BUTTONS - Modern Pill Shape */
+    .btn { 
+        padding: 14px 24px; 
+        border: none; 
+        border-radius: 12px; /* Bentuk Pill */
+        font-weight: 600; 
+        font-size: 0.95rem; 
+        letter-spacing: 0.025em; /* Spacing huruf profesional */
+        cursor: pointer; 
+        width: 100%; 
+        transition: all 0.2s ease; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        gap: 8px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn:active { transform: scale(0.96); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; filter: grayscale(1); }
+    
+    .btn-primary { 
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); 
+        color: white; 
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2); 
+    }
+    
+    .btn-success { 
+        background: linear-gradient(135deg, var(--success) 0%, #059669 100%); 
+        color: white; 
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); 
+    }
+    
+    .btn-danger { 
+        background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%); 
+        color: white; 
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); 
+    }
+    
+    .btn-outline { 
+        background: white; 
+        border: 1px solid var(--border); 
+        color: var(--text-main); 
+        box-shadow: none; 
+    }
+    .btn-outline:hover { background: #f1f5f9; }
+    
+    .btn-sm { padding: 8px 16px; font-size: 0.8rem; width: auto; display: inline-flex; height: 36px; }
+    .btn-print { background: var(--text-main); color: white; width: auto; box-shadow: none; }
 
-        /* Profile & Header */
-        .profile-header { background: linear-gradient(135deg, var(--primary) 0%, #6366f1 100%); color: white; padding: 30px 20px 40px; border-radius: 0 0 30px 30px; margin-top: -20px; }
-        .profile-content { display: flex; align-items: center; gap: 15px; }
-        .profile-avatar-icon { width: 70px; height: 70px; border-radius: 50%; border: 3px solid white; background-color: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    /* INPUTS - Floating Style */
+    input, select, textarea { 
+        width: 100%; 
+        padding: 12px 16px; 
+        border: 1px solid var(--border); 
+        border-radius: 10px; 
+        margin-bottom: 12px; 
+        font-size: 0.95rem; 
+        background: #fdfdfd;
+        transition: all 0.2s;
+        font-family: 'Inter', sans-serif;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);
+    }
+    
+    input:focus, select:focus, textarea:focus { 
+        border-color: var(--accent); 
+        outline: none; 
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); 
+        background: #fff;
+    }
+    
+    label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-main); margin-bottom: 6px; letter-spacing: 0.025em; }
 
-        /* Clock Widget */
-        .clock-widget { background: white; margin-top: -25px; margin-bottom: 20px; padding: 15px; border-radius: 16px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); position: relative; z-index: 10; }
-        #date-display { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; text-transform: capitalize; }
-        #time-display { font-size: 2rem; font-weight: 800; color: var(--primary); line-height: 1; font-variant-numeric: tabular-nums; }
+    /* --- LOGIN SCREEN REDESIGN --- */
+    .login-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 90vh; }
+    .login-card { 
+        width: 100%; 
+        max-width: 380px; 
+        text-align: center; 
+        background: white; 
+        padding: 40px 30px; 
+        border-radius: 30px; 
+        box-shadow: var(--shadow-float); 
+        border: 1px solid var(--border);
+    }
+    .app-logo { 
+        width: 80px; 
+        height: 80px; 
+        margin: 0 auto 24px; 
+        display: block; 
+        object-fit: contain; 
+        border-radius: 20px; 
+        box-shadow: var(--shadow-md);
+    }
+    .login-footer { margin-top: 40px; text-align: center; color: var(--text-light); font-size: 0.85rem; }
+    .login-footer .brand-name { font-weight: 700; color: var(--primary); font-size: 1.1rem; margin-bottom: 4px; }
 
-        /* Clock Buttons */
-        .clock-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
-        .clock-btn { height: 100px; flex-direction: column; font-size: 1rem; }
+    /* --- PROFILE HEADER --- */
+    .profile-header { 
+        background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%); 
+        color: white; 
+        padding: 40px 24px 60px; /* Padding lebih besar */
+        border-radius: 0 0 40px 40px; 
+        margin-top: -20px; 
+        box-shadow: var(--shadow-md);
+    }
+    
+    .profile-content { display: flex; align-items: center; gap: 16px; }
+    
+    .profile-avatar-icon { 
+        width: 64px; height: 64px; border-radius: 50%; 
+        background: rgba(255, 255, 255, 0.2); 
+        display: flex; align-items: center; justify-content: center; 
+        border: 2px solid rgba(255,255,255,0.5);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
 
-        /* Tables */
-        .table-container { overflow-x: auto; background: white; border-radius: var(--radius-md); border: 1px solid var(--border); }
-        table { width: 100%; border-collapse: collapse; min-width: 1000px; } /* Lebar Proporsional */
-        th { background: #F9FAFB; text-align: left; padding: 10px; font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; }
-        td { padding: 10px; border-bottom: 1px solid var(--border); font-size: 0.9rem; white-space: nowrap; }
-        .thumb-img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; cursor: pointer; border:1px solid #ddd; transition: 0.2s; }
-        .thumb-img:hover { opacity: 0.8; }
+    /* --- CLOCK WIDGET (GLASSMORPHISM) --- */
+    .clock-widget { 
+        background: var(--glass-bg); 
+        backdrop-filter: blur(16px); /* Efek kaca blur */
+        -webkit-backdrop-filter: blur(16px);
+        margin-top: -30px; 
+        margin-bottom: 30px; 
+        padding: 20px; 
+        border-radius: 20px; 
+        text-align: center; 
+        box-shadow: var(--shadow-float); 
+        position: relative; 
+        z-index: 10;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+    }
 
-        /* Filter Bar */
-        .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; background: #f9fafb; padding: 10px; border-radius: 8px; border: 1px solid #eee; }
-        .filter-bar input, .filter-bar select { width: auto; min-width: 120px; margin-bottom: 0; }
+    #date-display { font-size: 0.8rem; font-weight: 600; color: var(--text-light); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+    #time-display { font-size: 2.5rem; font-weight: 800; color: var(--primary); line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -1px; }
 
-        /* Footer Login */
-        .login-footer { margin-top: 40px; text-align: center; padding-top: 20px; border-top: 1px solid #E5E7EB; }
-        .login-footer .brand-name { font-size: 1.1rem; font-weight: 700; color: #374151; margin: 0 0 4px 0; }
-        .login-footer .support-text { font-size: 0.75rem; color: #9CA3AF; letter-spacing: 0.5px; margin: 0; }
+    /* --- CLOCK BUTTONS --- */
+    .clock-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 30px; }
+    .clock-btn { height: 110px; flex-direction: column; font-size: 1rem; font-weight: 600; border-radius: 20px; }
+    .clock-icon { font-size: 2rem; margin-bottom: 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+     
+    /* --- 1. RUNNING TEXT (MARQUEE) --- */
+    .marquee-strip {
+        background: #fffbeb; /* Kuning muda peringatan */
+        color: #92400e;
+        padding: 12px 0;
+        border-radius: 12px;
+        margin: 16px 0;
+        font-size: 0.85rem;
+        font-weight: 600;
+        overflow: hidden;
+        white-space: nowrap;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid #fcd34d;
+        position: relative;
+    }
+    
+    .marquee-content {
+        display: inline-block;
+        padding-left: 100%;
+        animation: marquee 20s linear infinite;
+    }
+    
+    @keyframes marquee { 
+        0% { transform: translateX(0); } 
+        100% { transform: translateX(-100%); } 
+    }
+     
+        /* --- 1. UPDATE ADMIN LAYOUT (DESKTOP LOOK) --- */
+    .container.admin { 
+        max-width: 95%; /* Lebar hampir penuh untuk layar lebar */
+        margin: 20px auto; /* Margin tipis atas bawah */
+        padding: 0; /* Padding 0 agar melebar pinggir */
+        width: 100%;
+    }
 
-        /* Modals */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
-        .modal-box { background: white; width: 95%; max-width: 550px; border-radius: 20px; padding: 24px; max-height: 90vh; overflow-y: auto; }
+    /* --- 2. UPDATE TOMBOL TAB (RICHER COLORS) --- */
+    /* Default style tombol Tab (Tidak Aktif) */
+    .tab-btn { 
+        background: white; 
+        border: 1px solid var(--border); 
+        color: var(--text-muted); 
+        padding: 10px 24px; /* Lebih lebar untuk desktop */
+    }
+    
+    /* Saat Hover */
+    .tab-btn:hover { 
+        background: #f8fafc; 
+        color: var(--primary); 
+        border-color: var(--primary);
+    }
 
-        /* Toast */
-        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: white; padding: 12px 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; min-width: 250px; border-left: 5px solid var(--primary); transform: translateX(120%); transition: transform 0.3s; }
-        .toast.show { transform: translateX(0); }
-        .toast.error { border-left-color: var(--danger); }
+    /* Saat Aktif (Warna Berubah Drastis) */
+    .tab-btn.active {
+        background: var(--primary) !important; /* Warna Utama */
+        color: white !important;
+        border-color: var(--primary) !important;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3) !important; /* Bayangan lebih tebal */
+        font-weight: 700;
+        transform: translateY(-2px); /* Sedikit naik ke atas */
+    }
 
-        video { width: 100%; height: 250px; background: black; border-radius: 12px; object-fit: cover; transform: scaleX(-1); }
-        .input-group { display: flex; gap: 10px; }
-        .csv-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 5px; line-height: 1.4; background: #f3f4f6; padding: 8px; border-radius: 6px; }
+    /* Overwrite warna spesifik tab saat aktif (opsional agar lebih kaya warna) */
+    .tab-emp.active { background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; border-color: #059669 !important; } /* Hijau */
+    .tab-att.active { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important; border-color: #2563eb !important; } /* Biru */
+    .tab-sub.active { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; border-color: #d97706 !important; } /* Orange */
+    
+    /* --- 2. TOMBOL ADMIN BERWARNA (RICHER COLORS) --- */
+    /* Saat tombol Aktif */
+    .tab-btn.active {
+        color: white !important;
+        border-color: transparent !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
+    }
 
-        /* Accordion */
-        .accordion-header { cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f3f4f6; }
-        .accordion-body { padding-top: 15px; background: #f9fafb; border-radius: 8px; margin-top: 10px; padding: 15px; }
+    /* Warna spesifik per tab */
+    .tab-emp.active { background: linear-gradient(135deg, #10b981 0%, #059669 100%); } /* Hijau */
+    .tab-att.active { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); } /* Biru */
+    .tab-sub.active { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); } /* Orange */
+    
+    /* --- TABLES & LISTS --- */
+    .table-container { overflow-x: auto; background: white; border-radius: var(--radius-md); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+    table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+    th { background: #f8fafc; text-align: left; padding: 14px 16px; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 0.9rem; color: var(--text-main); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fdfdfd; } /* Hover effect */
 
-        /* PRINT CSS */
-        @media print {
-            body * { visibility: hidden; }
-            .print-area, .print-area * { visibility: visible; }
-            .print-area { position: absolute; left: 0; top: 0; width: 100%; }
-            .no-print { display: none; }
-            .table-container { border: none; }
-            table { width: 100%; font-size: 10pt; }
-            th, td { border: 1px solid #000; white-space: normal; }
-        }
+    /* History Items */
+    .history-item { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #f1f5f9; }
+    .history-status { font-weight: 600; color: var(--text-main); font-size: 0.95rem; }
+    .history-loc { font-size: 0.8rem; color: var(--text-light); display: flex; align-items: center; gap: 4px; }
+
+    /* --- BADGES & TAGS --- */
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .badge-success { background: var(--success-light); color: #065f46; }
+    .badge-danger { background: var(--danger-light); color: #991b1b; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+
+    /* --- ADMIN DASHBOARD --- */
+    .admin-header { display: flex; justify-content:space-between; align-items:center; margin-bottom:30px; padding-bottom:20px; border-bottom:1px solid var(--border); }
+    
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 24px; border-radius: 20px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow-sm); }
+    .stat-val { font-size: 2.5rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; line-height: 1; }
+    .stat-label { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; background: #f8fafc; padding: 12px; border-radius: 12px; border: 1px solid var(--border); }
+    .filter-bar input, .filter-bar select { width: auto; min-width: 130px; margin-bottom: 0; font-size: 0.85rem; padding: 8px 12px; }
+
+    .tabs { display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 4px; }
+    .tab-btn { padding: 10px 20px; border-radius: 50px; background: white; border: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; cursor: pointer; transition: all 0.2s; }
+    .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2); }
+
+    /* --- MODALS --- */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .modal-box { background: white; width: 95%; max-width: 500px; border-radius: 24px; padding: 32px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-float); animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    @keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    /* --- TOAST --- */
+    #toast-container { position: fixed; top: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 12px; pointer-events: none; }
+    .toast { background: white; padding: 14px 24px; border-radius: 12px; box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 12px; min-width: 300px; border-left: 5px solid var(--primary); transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: auto; font-size: 0.9rem; font-weight: 500; }
+    .toast.show { transform: translateX(0); }
+    .toast.error { border-left-color: var(--danger); }
+    .toast-icon { font-size: 1.2rem; }
+
+    video { width: 100%; height: 280px; background: black; border-radius: 16px; object-fit: cover; transform: scaleX(-1); box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+    .input-group { display: flex; gap: 10px; }
+    
+    .csv-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 10px; line-height: 1.5; background: #f1f5f9; padding: 12px; border-radius: 12px; border: 1px dashed var(--border); }
+
+    /* --- ACCORDION --- */
+    .accordion-header { cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #f1f5f9; font-weight: 600; color: var(--text-main); transition: color 0.2s; }
+    .accordion-header:hover { color: var(--primary); }
+    .accordion-body { padding: 20px 0; background: transparent; } /* Background transparan */
+
+    /* --- THUMBNAILS --- */
+    .thumb-img { width: 56px; height: 56px; object-fit: cover; border-radius: 12px; cursor: pointer; border:1px solid var(--border); transition: 0.2s; }
+    .thumb-img:hover { transform: scale(1.05); border-color: var(--accent); }
+
+    /* --- PRINT --- */
+    @media print {
+        body * { visibility: hidden; }
+        .print-area, .print-area * { visibility: visible; }
+        .print-area { position: absolute; left: 0; top: 0; width: 100%; background: white; }
+        .no-print { display: none !important; }
+        .table-container { border: none; }
+        table { width: 100%; font-size: 10pt; border: 1px solid #000; }
+        th, td { border: 1px solid #000; padding: 6px; white-space: normal; }
+    }
     </style>
 </head>
 <body>
@@ -107,26 +365,27 @@
     <div id="toast-container"></div>
 
     <!-- VIEW: LOGIN -->
-    <section id="view-login" class="container">
-        <div style="text-align:center; margin-top: 50px;">
-            <img src="https://i.imgur.com/xX4QN18.png" style="width:100px; margin-bottom:20px; border-radius:12px;">
-            <h2>Sistem Presensi GMS</h2>
-            <p style="color:var(--text-muted); margin-bottom:30px;">Masuk untuk melanjutkan</p>
-            
-            <div class="card">
+        <section id="view-login" class="container">
+        <div class="login-wrapper">
+            <div class="login-card">
+                <img src="https://i.imgur.com/xX4QN18.png" alt="Logo Perusahaan" class="app-logo">
+                
+                <h2 style="margin-bottom: 8px; color: var(--primary);">Sistem Presensi GMS</h2>
+                <p style="color: var(--text-muted); margin-bottom: 32px; font-size: 0.9rem;">Selamat Datang Kembali</p>
+                
                 <label>Nama Lengkap</label>
                 <input type="text" id="login-name" placeholder="Masukkan Nama Anda" autocomplete="off">
                 
-                <label style="margin-top:15px;">ID Pengguna</label>
+                <label style="margin-top:16px;">ID Pengguna</label>
                 <div style="position: relative;">
                     <input type="password" id="login-id" placeholder="Masukkan ID" style="padding-right: 45px;" autocomplete="off">
-                    <div onclick="app.togglePassword()" style="position: absolute; right: 12px; top: 10px; cursor: pointer; color: var(--text-muted);">
+                    <div onclick="app.togglePassword()" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-muted);">
                         <svg id="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                         <svg id="eye-off-icon" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
                     </div>
                 </div>
 
-                <button onclick="app.login()" class="btn btn-primary" style="margin-top:20px;">Masuk</button>
+                <button onclick="app.login()" class="btn btn-primary" style="margin-top:24px; width:100%;">Masuk Aplikasi</button>
             </div>
 
             <div class="login-footer">
@@ -165,7 +424,12 @@
         <div id="gps-rule-info" class="hidden" style="background:#e0e7ff; color:#3730a3; padding:10px 15px; border-radius:8px; margin-bottom:15px; font-size:0.85rem; border:1px solid #c7d2fe;">
             ℹ️ Anda harus berada di radius <span id="rule-radius">0</span>m dari <span id="rule-loc">Lokasi</span>
         </div>
-
+        <!-- RUNNING TEXT (MARQUEE) -->
+        <div class="marquee-strip">
+            <div class="marquee-content">
+                ⚠️ Jangan Lupa Presensi / Jika tidak hadir gunakan tombol pengajuan &nbsp;&nbsp;&nbsp; ⚠️ Jangan Lupa Presensi / Jika tidak hadir gunakan tombol pengajuan
+            </div>
+        </div>
         <div class="clock-grid">
             <button onclick="app.openCamera('Masuk')" class="btn btn-success clock-btn"><span style="font-size:1.5rem;">📥</span>Clock In</button>
             <button onclick="app.openCamera('Pulang')" class="btn btn-danger clock-btn"><span style="font-size:1.5rem;">📤</span>Clock Out</button>
@@ -186,7 +450,7 @@
                 <label>Tanggal Pengajuan</label>
                 <input type="date" id="sub-date">
 
-                <label>Keterangan (Max 100 Karakter)</label>
+                <label>Keterangan (Min 100 Karakter)</label>
                 <textarea id="sub-desc" style="font-size:0.9rem;" placeholder="Tulis keterangan..."></textarea>
                 <small id="char-count" style="display:block; margin-bottom:10px; font-size:0.75rem; color:var(--text-muted);">0/100 Karakter</small>
 
@@ -226,13 +490,33 @@
             <h2>Admin Dashboard</h2>
             <button onclick="app.logout()" class="btn btn-danger btn-sm">Logout</button>
         </div>
-
-        <!-- Tabs -->
-        <div style="display:flex; gap:10px; margin-bottom:20px;" class="no-print">
-            <button onclick="app.switchTab('employees', this)" class="btn btn-primary btn-sm" style="background:var(--primary);">Data Karyawan</button>
-            <button onclick="app.switchTab('attendance', this)" class="btn btn-outline btn-sm">Rekap Absen</button>
-            <button onclick="app.switchTab('submissions', this)" class="btn btn-outline btn-sm">Pengajuan</button>
-            <button onclick="app.refreshData()" class="btn btn-success btn-sm">🔄 Refresh</button>
+        
+        <!-- Tabs (Updated) -->
+        <div style="display:flex; gap:10px; margin-bottom:24px;" class="no-print">
+            <button onclick="app.switchTab('employees', this)" class="tab-btn tab-emp active">Data Karyawan</button>
+            <button onclick="app.switchTab('attendance', this)" class="tab-btn tab-att">Rekap Absen</button>
+            <button onclick="app.switchTab('submissions', this)" class="tab-btn tab-sub">Pengajuan</button>
+            <button onclick="app.refreshData()" class="btn btn-primary btn-sm" style="width:auto;">🔄 Refresh</button>
+        </div>
+        
+        <!-- WIDGET STATISTIK (PASANG DI SINI) -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Karyawan</div>
+                <div class="stat-val" id="stat-total">0</div>
+                  </div>
+                      <div class="stat-card">
+                <div class="stat-label" style="color:var(--success);">Hadir Hari Ini</div>
+                <div class="stat-val" id="stat-present" style="color:var(--success);">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label" style="color:var(--danger);">Belum Hadir</div>
+                <div class="stat-val" id="stat-absent" style="color:var(--danger);">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label" style="color:var(--warning);">Pengajuan Pending</div>
+                <div class="stat-val" id="stat-sub" style="color:var(--warning);">0</div>
+            </div>
         </div>
 
         <!-- Tab Employees -->
@@ -263,23 +547,22 @@
         </div>
 
         <!-- Tab Attendance -->
-                    <div id="tab-attendance" class="print-area hidden">
-                    <div class="card" style="padding:0; overflow:hidden;">
-                         <!-- FILTERS & BUTTONS (UPDATED) -->
-                         <div class="filter-bar no-print">
-                            <input type="date" id="filter-att-date" placeholder="Filter Tanggal" onchange="app.refreshData()">
-                            <input type="month" id="filter-att-month" placeholder="Filter Bulan" onchange="app.refreshData()">
-                            <button onclick="window.print()" class="btn btn-print btn-sm">🖨️ Print</button>
-                            <button onclick="app.downloadExcel()" class="btn btn-success btn-sm">📥 Download Excel</button>
-                        </div>
-                        <div class="table-container">
-                            <table id="admin-att-table">
-                                <thead><tr><th>Tanggal</th><th>Nama</th><th>Clock In</th><th>Clock Out</th><th>Lokasi Terakhir</th><th>Foto</th></tr></thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
+        <div id="tab-attendance" class="print-area hidden">
+            <div class="card" style="padding:0; overflow:hidden;">
+                 <!-- Filters -->
+                 <div class="filter-bar no-print">
+                    <input type="date" id="filter-att-date" onchange="app.refreshData()">
+                    <input type="month" id="filter-att-month" onchange="app.refreshData()">
+                    <button onclick="window.print()" class="btn btn-print btn-sm">  Print </button>
                 </div>
+                <div class="table-container">
+                    <table id="admin-att-table">
+                        <thead><tr><th>Waktu</th><th>Nama</th><th>Tipe</th><th>Lokasi (Lat, Lng)</th><th>Foto</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
         <!-- Tab Submissions -->
         <div id="tab-submissions" class="print-area hidden">
@@ -353,7 +636,7 @@
 
     <!-- JAVASCRIPT -->
     <script>
-        const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5c5TuUjIP7KRH_npf4tysycgk-KQwN4pr54BAO5jg0a0fR70yXDNKdrFZ7W0c8Amk/exec'; 
+        const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz5BTolmP3ovePr1L7tHvmCjpaam0gylTAuulApMt8buTeWvQGgIX6zVca_Y4mL-sAq/exec'; 
 
         const $ = id => document.getElementById(id);
 
@@ -453,7 +736,6 @@
                 const u = this.data.currentUser;
                 $('emp-name').textContent = u.Name;
                 $('emp-role').textContent = u.WorkLocation || "Karyawan";
-                
                 if(u.GPSMode === 'terkunci') {
                     $('gps-rule-info').classList.remove('hidden');
                     $('rule-radius').textContent = u.Radius;
@@ -461,19 +743,10 @@
                 } else {
                     $('gps-rule-info').classList.add('hidden');
                 }
-                
-                // Jam & GPS
-                this.updateClock(); 
-                setInterval(() => this.updateClock(), 1000);
+                this.updateClock(); setInterval(() => this.updateClock(), 1000);
                 this.getLocation();
-				this.checkTodayStatus();
-            },
-
-                // --- TAMBAHKAN INI (AUTO REFRESH PENGAJUAN) ---
-                this.loadMySubmissions(); // Load pertama
-                // Cek update setiap 30 detik
-                setInterval(() => this.loadMySubmissions(), 30000); 
-                // ---------------------------------------------
+                this.loadMySubmissions();
+                this.checkTodayStatus();
             },
             
             getLocation: function() {
@@ -489,41 +762,6 @@
                     });
                 }
             },
-			
-			// --- CHECK STATUS HARI INI (CEGAH 2X ABSEN) ---
-            checkTodayStatus: function() {
-                fetch(${APP_SCRIPT_URL}?action=getData)
-                .then(r => r.json())
-                .then(res => {
-                    if(res.attendance) {
-                        const todayStr = new Date().toISOString().split('T')[0];
-                        // Cari apakah ada data hari ini untuk user ini
-                        const todayAtt = res.attendance.find(r => r.Date.split('T')[0] === todayStr && r.UserID === this.data.currentUser.ID);
-                        
-                        // Disable tombol jika sudah absen
-                        if(todayAtt) {
-                            if(todayAtt.ClockIn) {
-                                // Sudah Masuk -> Matikan tombol Masuk
-                                const btnIn = document.querySelector("button[onclick*=\"Masuk\"]");
-                                if(btnIn) {
-                                    btnIn.disabled = true;
-                                    btnIn.style.opacity = "0.5";
-                                    btnIn.textContent = "Sudah Masuk";
-                                }
-                            }
-                            if(todayAtt.ClockOut) {
-                                // Sudah Pulang -> Matikan tombol Pulang
-                                const btnOut = document.querySelector("button[onclick*=\"Pulang\"]");
-                                if(btnOut) {
-                                    btnOut.disabled = true;
-                                    btnOut.style.opacity = "0.5";
-                                    btnOut.textContent = "Sudah Pulang";
-                                }
-                            }
-                        }
-                    }
-                });
-            },
 
             // --- SUBMISSION (With Auto WA & Upload) ---
             submitPengajuan: function() {
@@ -533,7 +771,7 @@
                 const fileInput = $('sub-proof');
                 
                 if(!date) return showToast("Harap pilih tanggal!", "error");
-                if(desc.length > 100) return showToast(`!Keterangan Terlalu Panjang Max 100 kar. (${desc.length})`, "error");
+                if(desc.length > 100) return showToast(`Keterangan terlalu pendek! Max 100 kar. (${desc.length})`, "error");
 
                 const process = (base64Proof) => {
                     const payload = {
@@ -588,11 +826,11 @@
                         let statusBadge = '';
                         let actionBtn = '';
 
-                        if(row.Status === 'Pending') statusBadge = '<span style="color:#F59E0B; font-weight:bold;">⏳ Pending</span>';
-                        if(row.Status === 'Approved') statusBadge = '<span style="color:#10B981; font-weight:bold;">✅ Disetujui</span>';
-                        if(row.Status === 'Rejected') {
-                            statusBadge = '<span style="color:#EF4444; font-weight:bold;">❌ Ditolak</span>';
-                            actionBtn = `<div style="margin-top:8px; background:#fee2e2; color:#991b1b; padding:8px; border-radius:4px; font-size:0.8rem;"><b>Alasan:</b> ${row.Reason || '-'}</div>`;
+                        // Contoh untuk History
+                          if(row.Status === 'Pending') statusBadge = '<span class="badge badge-warning">⏳ Pending</span>';
+                          if(row.Status === 'Approved') statusBadge = '<span class="badge badge-success">✅ Disetujui</span>';
+                          if(row.Status === 'Rejected') statusBadge = '<span class="badge badge-danger">❌ Ditolak</span>'; {
+                          actionBtn = `<div style="margin-top:8px; background:#fee2e2; color:#991b1b; padding:8px; border-radius:4px; font-size:0.8rem;"><b>Alasan:</b> ${row.Reason || '-'}</div>`;
                         }
 
                         const proofLink = row.ProofURL && row.ProofURL !== "No Proof" ? `<a href="${row.ProofURL}" target="_blank" style="color:blue; font-size:0.8rem;">Lihat Bukti</a>` : '';
@@ -654,6 +892,7 @@
                 .then(() => {
                     showToast("Absen Berhasil!");
                     this.closeCamera();
+                .catch(err => {  console.error("Gagal Kirim:", err);  showToast("Gagal menyimpan data. Cek console.", "error"); }
                     const list = $('history-list-absen');
                     const item = document.createElement('div');
                     item.style.padding = "10px 0"; item.style.borderBottom = "1px solid #eee";
@@ -663,12 +902,30 @@
             },
 
             // --- ADMIN ---
+            // --- PERBAIKAN SWITCH TAB ---
             switchTab: function(tab, btn) {
-                document.querySelectorAll('.btn').forEach(b => { if(!b.classList.contains('btn-primary')) b.classList.add('btn-outline'); });
-                btn.classList.remove('btn-outline'); btn.classList.add('btn-primary');
+            // Hanya pilih elemen yang punya class 'tab-btn', jangan ganggu tombol lain
+                const allTabs = document.querySelectorAll('.tab-btn');
+                
+            // Reset semua tab menjadi tampilan awal (Putih, Border Abu)
+                allTabs.forEach(t => {
+                    t.classList.remove('active');
+            // Hapus style inline jika ada
+                    t.style.background = ''; 
+                    t.style.color = '';
+                    t.style.borderColor = '';
+                    t.style.boxShadow = '';
+                    t.style.transform = '';
+                });
+
+            // Jadikan tombol yang diklik menjadi Aktif (Tambah class active)
+                btn.classList.add('active');
+                
+           // Tampilkan content tab yang dipilih
                 $('tab-employees').classList.add('hidden');
                 $('tab-attendance').classList.add('hidden');
                 $('tab-submissions').classList.add('hidden');
+                
                 $(`tab-${tab}`).classList.remove('hidden');
             },
 
@@ -687,7 +944,36 @@
                     </tr>
                 `).join('');
             },
+            
+           // --- FITUR STATISTIK ADMIN ---
+            renderStats: function(data) {
+                // 1. Hitung Total Karyawan
+                const totalEmp = this.data.users.filter(u => u.Role === 'employee').length;
+                $('stat-total').textContent = totalEmp;
 
+                // 2. Hitung Hadir / Tidak Hadir Hari Ini
+                let todayAtt = [];
+                if(data && data.attendance) {
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    // Filter absen hari ini
+                    todayAtt = data.attendance.filter(r => r.Date.split('T')[0] === todayStr);
+                }
+                
+                // Hitung unik user yang sudah Clock In
+                const uniquePresent = [...new Set(todayAtt.map(r => r.UserID))];
+                const presentCount = uniquePresent.length;
+                const absentCount = totalEmp - presentCount;
+
+                $('stat-present').textContent = presentCount;
+                $('stat-absent').textContent = absentCount;
+
+                // 3. Hitung Pengajuan Pending
+                let pendingCount = 0;
+                if(data && data.submissions) {
+                    pendingCount = data.submissions.filter(r => r.Status === 'Pending').length;
+                }
+                $('stat-sub').textContent = pendingCount;
+            },
             openEditModal: function(id) {
                 const user = this.data.users.find(u => u.ID == id);
                 if(!user) return;
@@ -717,12 +1003,13 @@
                     targetLat: $('new-lat').value, targetLng: $('new-lng').value, radius: $('new-radius').value
                 };
                 fetch(APP_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
-                .then(() => {
-                    showToast("User Diperbarui");
-                    $('user-modal').style.display = 'none';
-                    this.fetchUsers(() => { this.renderEmployees(); this.refreshData(); });
-                });
-            },
+			.then(() => { showToast("Absen Berhasil!"); this.closeCamera();
+             // ... kode history ...
+			})
+			.catch(err => { console.error("Gagal Kirim:", err);
+				showToast("Gagal menyimpan data. Cek console.", "error");
+            });
+        },
 
             showAddUserModal: function() {
                 $('user-modal-title').textContent = "Tambah Karyawan";
@@ -789,13 +1076,6 @@
                     }
                 }
             },
-			// --- FITUR DOWNLOAD EXCEL ---
-            downloadExcel: function() {
-                const table = document.getElementById('admin-att-table');
-                // Konversi tabel HTML menjadi Worksheet Excel menggunakan SheetJS
-                const wb = XLSX.utils.table_to_book(table, {sheet: "Rekap Absen"});
-                XLSX.writeFile(wb, 'Rekap_Absen.xlsx');
-            },
 
             renderSubmissions: function(data) {
                 const tbody = $('admin-sub-table').querySelector('tbody');
@@ -844,35 +1124,21 @@
             refreshData: function() {
                 this.fetchUsers(() => this.renderEmployees());
                 fetch(`${APP_SCRIPT_URL}?action=getData`).then(r=>r.json()).then(res => {
-                    // Attendance (With Filters)
-                    // Attendance (Updated Logic)
-                let attData = res.attendance || [];
-                const fDate = $('filter-att-date').value;
-                const fMonth = $('filter-att-month').value;
-                
-                if(fDate) attData = attData.filter(r => new Date(r.Date).toISOString().split('T')[0] === fDate);
-                if(fMonth) attData = attData.filter(r => new Date(r.Date).toISOString().substring(0, 7) === fMonth);
-
-                $('admin-att-table').querySelector('tbody').innerHTML = attData.map(row => {
-                    const dateStr = new Date(row.Date).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year:'2-digit'});
-                    const inTime = row.ClockIn ? new Date(row.ClockIn).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '-';
-                    const outTime = row.ClockOut ? new Date(row.ClockOut).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '-';
-                    const loc = row.Lat ? `${row.Lat}, ${row.Lng}` : '-';
-                    const photo = (row.PhotoURL && row.PhotoURL !== 'No Photo') 
-                                ? `<a href="${row.PhotoURL}" target="_blank"><img src="${row.PhotoURL}" class="thumb-img"></a>` 
-                                : '-';
+                    this.renderStats(res);
                     
-                    return `
-                    <tr>
-                        <td>${dateStr}</td>
-                        <td>${row.Name}</td>
-                        <td>${inTime}</td>
-                        <td>${outTime}</td>
-                        <td>${loc}</td>
-                        <td>${photo}</td>
-                    </tr>
-                `;
-                }).join('');
+                    // Attendance (With Filters)
+                    let attData = res.attendance || [];
+                    const fDate = $('filter-att-date').value;
+                    const fMonth = $('filter-att-month').value;
+                    
+                    if(fDate) attData = attData.filter(r => new Date(r.Timestamp).toISOString().split('T')[0] === fDate);
+                    if(fMonth) attData = attData.filter(r => new Date(r.Timestamp).toISOString().substring(0, 7) === fMonth);
+
+                    $('admin-att-table').querySelector('tbody').innerHTML = attData.map(row => `
+                        <tr><td>${new Date(row.Timestamp).toLocaleString()}</td><td>${row.Name}</td><td>${row.Type}</td><td>${row.Lat}, ${row.Lng}</td>
+                        <td>${(row.PhotoURL && row.PhotoURL !== 'No Photo') ? `<a href="${row.PhotoURL}" target="_blank"><img src="${row.PhotoURL}" class="thumb-img"></a>` : '-'}</td>
+                        </tr>
+                    `).join('');
 
                     // Submissions (With Filters)
                     let subData = res.submissions || [];
