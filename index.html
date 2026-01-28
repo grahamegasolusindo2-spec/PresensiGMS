@@ -346,9 +346,16 @@
     <script>
         // --- KONFIGURASI SUPABASE ---
         // PASTIKAN ANDA MENGISI DUA BAGIAN INI
-        const SUPABASE_URL = 'https://vvanhknwizwxlvznbesg.supabase.com'; 
-        const SUPABASE_KEY = 'sb_publishable_tLMaZcX3Dmgz9E1YeoxYYw_Cd7aWaol';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        <!-- 1. PASTIKAN BARIS INI ADA DAN HANYA SATU (TIDAK BOLEH DIHAPUS) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- 2. BARU BARIS INI LOGIKNYA -->
+<script>
+    const SUPABASE_URL = 'https://vvanhknwizwxlvznbesg.supabase.com'; 
+    const SUPABASE_KEY = 'sb_publishable_tLMaZcX3Dmgz9E1YeoxYYw_Cd7aWaol';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // ... kode app = { ... } .
 
         const app = {
             currentUser: null,
@@ -705,4 +712,5 @@
     </script>
 </body>
 </html>
+
 
