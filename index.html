@@ -191,7 +191,7 @@
 
         <div class="marquee-strip">
             <div class="marquee-content">
-                ⚠️ Ingat! Clock In maksimal jam 09:00 WIB.  |  Pastikan Anda berada di dalam radius kantor saat absen.  |  Gunakan fitur Pengajuan jika tidak masuk kerja.
+                ⚠️ Jangal lupa presensi.  |  Pastikan Anda berada di dalam radius kantor saat absen.  |  Gunakan fitur Pengajuan jika tidak masuk kerja.
             </div>
         </div>
 
@@ -342,20 +342,17 @@
         </div>
     </div>
 
-    <!-- SCRIPT UTAMA -->
+        <!-- SCRIPT UTAMA -->
+    <!-- 1. Script Library Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- 2. Script Logic Aplikasi -->
     <script>
         // --- KONFIGURASI SUPABASE ---
-        // PASTIKAN ANDA MENGISI DUA BAGIAN INI
-        <!-- 1. PASTIKAN BARIS INI ADA DAN HANYA SATU (TIDAK BOLEH DIHAPUS) -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- 2. BARU BARIS INI LOGIKNYA -->
-<script>
-    const SUPABASE_URL = 'https://vvanhknwizwxlvznbesg.supabase.com'; 
-    const SUPABASE_KEY = 'sb_publishable_tLMaZcX3Dmgz9E1YeoxYYw_Cd7aWaol';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    // ... kode app = { ... } .
+        // PENTING: GANTI 'xxxxx' DENGAN KEY ASLI DARI SUPABASE ANDA!
+        const SUPABASE_URL = 'https://vvanhknwizwxlvznbesg.supabase.com'; 
+        const SUPABASE_KEY = 'sb_publishable_tLMaZcX3Dmgz9E1YeoxYYw_Cd7aWaol';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const app = {
             currentUser: null,
@@ -712,5 +709,4 @@
     </script>
 </body>
 </html>
-
-
+                    
