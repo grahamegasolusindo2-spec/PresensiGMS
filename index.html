@@ -286,7 +286,15 @@
                 </div>
             </div>
         </div>
-
+        
+<!-- Tambahkan ini di dalam <div id="tab-employees"> jika belum ada -->
+<div style="margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 15px;">
+    <label>Import Massal (CSV)</label>
+    <input type="file" id="import-file" accept=".csv">
+    <button onclick="app.importEmployees()" class="btn btn-success btn-sm">📥 Import CSV</button>
+    <small>Format: ID,Nama (K003,Nama Karyawan)</small>
+</div>
+        
         <!-- TAB PENGAJUAN -->
         <div id="tab-submissions" class="hidden">
             <div class="card">
@@ -593,7 +601,55 @@
                 alert("Karyawan ditambahkan!");
                 this.loadEmployeeList();
                 document.getElementById('new-emp-id').value = '';
-                document.getElementById('new-emp-name').value = '';
+                document.getElementById('new-emp-name').value = ''
+            },
+
+                        // Tambahkan fungsi ini di dalam const app = { ... }
+            
+            // Fitur Import CSV
+            importEmployees: function() {
+                const fileInput = document.getElementById('import-file');
+                const file = fileInput.files[0];
+
+                if (!file) {
+                    return alert("Pilih file CSV terlebih dahulu!");
+                }
+
+                // Menggunakan library PapaParse (sudah include di head HTML Anda)
+                Papa.parse(file, {
+                    header: false, // Kita baca array biasa [ID, Nama]
+                    skipEmptyLines: true,
+                    complete: async function(results) {
+                        const rows = results.data;
+                        let successCount = 0;
+                        let errorCount = 0;
+
+                        for (let i = 0; i < rows.length; i++) {
+                            // Asumsi format CSV: Kolom 0 = ID, Kolom 1 = Nama
+                            const empId = rows[i][0];
+                            const empName = rows[i][1];
+
+                            if (empId && empName) {
+                                const { error } = await supabase.from('profiles').insert([{
+                                    id: empId,
+                                    full_name: empName,
+                                    role: 'employee'
+                                }]);
+                                
+                                if (error) {
+                                    errorCount++;
+                                    console.error("Gagal import: " + empId, error);
+                                } else {
+                                    successCount++;
+                                }
+                            }
+                        }
+
+                        alert(`Import Selesai!\nBerhasil: ${successCount}\nGagal/Duplikat: ${errorCount}`);
+                        app.loadEmployeeList(); // Refresh tabel
+                        fileInput.value = ""; // Reset input
+                    }
+                });
             },
 
             loadSubmissions: async function() {
@@ -641,4 +697,5 @@
     </script>
 </body>
 </html>
+
 
