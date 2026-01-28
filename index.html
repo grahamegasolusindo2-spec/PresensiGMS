@@ -356,15 +356,15 @@
                 <button onclick="app.capturePhoto()" class="btn btn-primary btn-sm">📸 Ambil & Kirim</button>
             </div>
         </div>
-    </div>
+    </div>  
 
-    <script>
-        
-    // --- KONFIGURASI SUPABASE ---
-    // PASTIKAN INI SUDAH DIISI!
+<script>
+    // --- SCRIPT BARU (YANG SAYA BERIKAN TADI) ---
     const SUPABASE_URL = 'https://vvanhknwizwxlvznbesg.supabase.co'; 
-    const SUPABASE_KEY = 'sb_publishable_tLMaZcX3Dmgz9E1YeoxYYw_Cd7aWaol';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_KEY = 'sb_publishable_tLMaZcX3Dmgz9E1YeoxYYw_Cd7aWaol';  
+    const supabase = window.supabase.createClient(...);  <-- ERROR: Supabase sudah didefinisikan di atas!
+    const app = { ... };
+        
 
     const app = {
         currentUser: null,
@@ -728,5 +728,6 @@
 </body>
 </html>
                 
+
 
 
