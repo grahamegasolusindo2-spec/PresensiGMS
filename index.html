@@ -112,37 +112,71 @@
 <body>
 
     <!-- VIEW: LOGIN -->
-    <section id="view-login" class="container">
-        <div class="login-wrapper">
-            <div class="login-card">
-                <img src="https://i.imgur.com/xX4QN18.png" alt="Logo Perusahaan" class="app-logo">
-                
-                <h2 style="margin-bottom: 8px;">Selamat Datang</h2>
-                <p style="color: var(--text-muted); margin-bottom: 30px;">Sistem Presensi Digital GMS</p>
-                
-                <div class="card" style="text-align: left; box-shadow: var(--shadow);">
-                    <div style="margin-bottom: 16px;">
-                        <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px;">Nama Lengkap</label>
-                        <input type="text" id="login-name" placeholder="Contoh: Budi Santoso">
-                    </div>
-                    <div style="margin-bottom: 24px;">
-                        <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px;">ID Pengguna</label>
-                        <input type="text" id="login-id" placeholder="ID Anda (Contoh: K001)">
-                    </div>
-                    <button onclick="app.login()" class="btn btn-primary">Masuk Aplikasi</button>
+    
+   <section id="view-login" class="container">
+    <div class="login-wrapper">
+        
+        <!-- FORM LOGIN (Awalnya Muncul) -->
+        <div id="form-login-container" class="login-card">
+            <img src="https://i.imgur.com/xX4QN18.png" alt="Logo" class="app-logo">
+            <h2 style="margin-bottom: 8px;">Selamat Datang</h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">Sistem Presensi Digital GMS</p>
+            
+            <div class="card" style="text-align: left; box-shadow: var(--shadow);">
+                <div style="margin-bottom: 16px;">
+                    <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px;">Nama Lengkap</label>
+                    <input type="text" id="login-name" placeholder="Contoh: Budi Santoso">
                 </div>
-                <p style="margin-top: 20px; font-size: 0.8rem; color: var(--text-muted);">
-                    *Admin gunakan ID <b>gms001</b>
-                </p>
+                <div style="margin-bottom: 24px;">
+                    <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px;">ID Pengguna</label>
+                    <input type="text" id="login-id" placeholder="ID Anda">
+                </div>
+                <button onclick="app.login()" class="btn btn-primary">Masuk Aplikasi</button>
             </div>
+            
+            <!-- Tombol Pindah ke Form Daftar -->
+            <p style="margin-top: 20px; font-size: 0.9rem;">
+                Belum punya akun? 
+                <a href="#" onclick="app.toggleRegister()" style="color: var(--primary); font-weight: 600; text-decoration: none;">Daftar disini</a>
+            </p>
         </div>
 
-        <div class="admin-footer">
-            <p class="brand-name">Graha Mega Solusindo</p>
-            <p class="support-text">supported by: Klase Auto Graha</p>
-        </div>
-    </section>
+        <!-- FORM DAFTAR (Awalnya Tersembunyi) -->
+        <div id="form-register-container" class="login-card hidden">
+            <h2 style="margin-bottom: 20px;">Buat Akun Baru</h2>
+            
+            <div class="card" style="text-align: left; box-shadow: var(--shadow);">
+                <div style="margin-bottom: 16px;">
+                    <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Nama Lengkap</label>
+                    <input type="text" id="reg-name" placeholder="Nama Lengkap Anda">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Buat ID Pengguna (Unik)</label>
+                    <input type="text" id="reg-id" placeholder="Contoh: K003">
+                </div>
+                <div style="margin-bottom: 24px;">
+                    <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Kode Admin (Opsional)</label>
+                    <input type="text" id="reg-code" placeholder="Isi jika Anda Admin">
+                    <small style="color: var(--text-muted); font-size: 0.75rem;">*Biarkan kosong jika mendaftar sebagai Karyawan</small>
+                </div>
+                <button onclick="app.register()" class="btn btn-primary">Daftar Sekarang</button>
+            </div>
 
+            <!-- Tombol Kembali ke Login -->
+            <p style="margin-top: 20px; font-size: 0.9rem;">
+                Sudah punya akun? 
+                <a href="#" onclick="app.toggleRegister()" style="color: var(--primary); font-weight: 600; text-decoration: none;">Login disini</a>
+            </p>
+        </div>
+
+    </div>
+
+    <div class="admin-footer">
+        <p class="brand-name">Graha Mega Solusindo</p>
+        <p class="support-text">supported by: Klase Auto Graha</p>
+    </div>
+</section> 
+    
     <!-- VIEW: EMPLOYEE -->
     <section id="view-employee" class="container hidden">
         <div class="profile-header">
@@ -343,16 +377,68 @@
                 const name = document.getElementById('login-name').value;
                 const id = document.getElementById('login-id').value;
 
-                if(!name || !id) return alert("Mohon isi nama dan ID!");
+                if(!name || !id) return alert("Mohon isi nama dan Id")
+    
+    // Fungsi untuk berpindah tampilan Login <-> Daftar
+    toggleRegister: function() {
+        const loginForm = document.getElementById('form-login-container');
+        const regForm = document.getElementById('form-register-container');
+        
+        if (loginForm.classList.contains('hidden')) {
+            // Pindah ke Login
+            loginForm.classList.remove('hidden');
+            regForm.classList.add('hidden');
+        } else {
+            // Pindah ke Daftar
+            loginForm.classList.add('hidden');
+            regForm.classList.remove('hidden');
+        }
+    },
 
-                // Cek Admin Khusus
-                if(id.toLowerCase() === 'gms001') {
-                    this.currentUser = { id: 'gms001', full_name: 'Administrator', role: 'admin' };
-                    this.currentRole = 'admin';
-                    this.showView('admin');
-                    this.loadAdminDashboard();
-                    return;
-                }
+    // Fungsi Logic Pendaftaran
+    register: async function() {
+        const name = document.getElementById('reg-name').value;
+        const id = document.getElementById('reg-id').value;
+        const code = document.getElementById('reg-code').value;
+
+        if(!name || !id) {
+            return alert("Mohon isi Nama dan ID Pengguna!");
+        }
+
+        // Tentukan Role
+        // Jika kode rahasia adalah "GMS2024", jadikan Admin. Selain itu Karyawan.
+        let role = 'employee';
+        if (code === 'GMS2024') { 
+            role = 'admin'; 
+        }
+
+        // Simpan ke Database
+        const { error } = await supabase.from('profiles').insert([{
+            id: id, 
+            full_name: name, 
+            role: role
+        }]);
+
+        if (error) {
+            if (error.code === '23505') {
+                alert("Gagal! ID Pengguna ini sudah terdaftar.");
+            } else {
+                alert("Terjadi kesalahan: " + error.message);
+            }
+        } else {
+            alert(`Pendaftaran Berhasil!\nRole: ${role.toUpperCase()}\nSilakan Login.`);
+            
+            // Kosongkan form
+            document.getElementById('reg-name').value = '';
+            document.getElementById('reg-id').value = '';
+            document.getElementById('reg-code').value = '';
+            
+            // Kembali ke layar Login
+            this.toggleRegister();
+        }
+    },
+    
+}; 
 
                 // Cek Karyawan di Database
                 const { data, error } = await supabase.from('profiles').select('*').eq('id', id).single();
@@ -697,5 +783,6 @@
     </script>
 </body>
 </html>
+
 
 
