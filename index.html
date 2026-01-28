@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sistem Presensi Modern - Graha Mega Solusinya</title>
+    <title>Sistem Presensi Modern - Graha Mega Solusindo</title>
     <!-- Font Inter untuk tampilan modern -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Library SheetJS untuk Export Excel -->
@@ -359,430 +359,374 @@
     </div>
 
     <script>
-        // --- KONFIGURASI SUPABASE ---
-        // GANTI DENGAN URL DAN KEY DARI DASHBOARD SUPABASE ANDA
-        const SUPABASE_URL = 'https://vvanhknwizwxlvznbesg.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_tLMaZcX3Dmgz9E1YeoxYYw_Cd7aWaol';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        const app = {
-            currentUser: null,
-            currentRole: null,
-            videoStream: null,
-            photoData: null,
-            clockActionType: null, // 'Masuk' or 'Pulang'
-
-            // --- 1. AUTHENTICATION ---
-            login: async function() {
-                const name = document.getElementById('login-name').value;
-                const id = document.getElementById('login-id').value;
-
-                if(!name || !id) return alert("Mohon isi nama dan Id")
-    
-    // Fungsi untuk berpindah tampilan Login <-> Daftar
-    toggleRegister: function() {
-        const loginForm = document.getElementById('form-login-container');
-        const regForm = document.getElementById('form-register-container');
         
-        if (loginForm.classList.contains('hidden')) {
-            // Pindah ke Login
-            loginForm.classList.remove('hidden');
-            regForm.classList.add('hidden');
-        } else {
-            // Pindah ke Daftar
-            loginForm.classList.add('hidden');
-            regForm.classList.remove('hidden');
-        }
-    },
+    // --- KONFIGURASI SUPABASE ---
+    // PASTIKAN INI SUDAH DIISI!
+    const SUPABASE_URL = 'https://vvanhknwizwxlvznbesg.supabase.co'; 
+    const SUPABASE_KEY = 'sb_publishable_tLMaZcX3Dmgz9E1YeoxYYw_Cd7aWaol';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Fungsi Logic Pendaftaran
-    register: async function() {
-        const name = document.getElementById('reg-name').value;
-        const id = document.getElementById('reg-id').value;
-        const code = document.getElementById('reg-code').value;
+    const app = {
+        currentUser: null,
+        currentRole: null,
+        videoStream: null,
+        photoData: null,
+        clockActionType: null,
 
-        if(!name || !id) {
-            return alert("Mohon isi Nama dan ID Pengguna!");
-        }
+        // --- 1. FITUR LOGIN ---
+        login: async function() {
+            const name = document.getElementById('login-name').value;
+            const id = document.getElementById('login-id').value;
 
-        // Tentukan Role
-        // Jika kode rahasia adalah "GMS2024", jadikan Admin. Selain itu Karyawan.
-        let role = 'employee';
-        if (code === 'GMS2024') { 
-            role = 'admin'; 
-        }
+            if(!name || !id) return alert("Mohon isi nama dan ID!");
 
-        // Simpan ke Database
-        const { error } = await supabase.from('profiles').insert([{
-            id: id, 
-            full_name: name, 
-            role: role
-        }]);
-
-        if (error) {
-            if (error.code === '23505') {
-                alert("Gagal! ID Pengguna ini sudah terdaftar.");
-            } else {
-                alert("Terjadi kesalahan: " + error.message);
+            // Cek Admin Khusus
+            if(id.toLowerCase() === 'gms001') {
+                this.currentUser = { id: 'gms001', full_name: 'Administrator', role: 'admin' };
+                this.currentRole = 'admin';
+                this.showView('admin');
+                this.loadAdminDashboard();
+                return;
             }
-        } else {
-            alert(`Pendaftaran Berhasil!\nRole: ${role.toUpperCase()}\nSilakan Login.`);
+
+            // Cek Karyawan di Database
+            const { data, error } = await supabase.from('profiles').select('*').eq('id', id).single();
             
-            // Kosongkan form
-            document.getElementById('reg-name').value = '';
-            document.getElementById('reg-id').value = '';
-            document.getElementById('reg-code').value = '';
+            if (error || !data) {
+                alert("ID Karyawan tidak ditemukan! Silakan daftar atau hubungi Admin.");
+            } else {
+                if(data.full_name !== name) {
+                    await supabase.from('profiles').update({full_name: name}).eq('id', id);
+                    data.full_name = name;
+                }
+                this.currentUser = data;
+                this.currentRole = 'employee';
+                this.showView('employee');
+                this.initEmployee();
+            }
+        },
+
+        logout: function() {
+            this.currentUser = null;
+            this.currentRole = null;
+            document.getElementById('view-login').classList.remove('hidden');
+            document.getElementById('view-employee').classList.add('hidden');
+            document.getElementById('view-admin').classList.add('hidden');
+        },
+
+        // --- 2. FITUR PINDAH LAYAR ---
+        showView: function(viewName) {
+            document.getElementById('view-login').classList.add('hidden');
+            document.getElementById('view-employee').classList.add('hidden');
+            document.getElementById('view-admin').classList.add('hidden');
+            document.getElementById('view-' + viewName).classList.remove('hidden');
+        },
+
+        // --- 3. FITUR PINDAH ANTARA LOGIN & DAFTAR (BARU) ---
+        toggleRegister: function() {
+            const loginForm = document.getElementById('form-login-container');
+            const regForm = document.getElementById('form-register-container');
             
-            // Kembali ke layar Login
-            this.toggleRegister();
-        }
-    },
-    
-}; 
+            if (loginForm.classList.contains('hidden')) {
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+            } else {
+                loginForm.classList.add('hidden');
+                regForm.classList.remove('hidden');
+            }
+        },
 
-                // Cek Karyawan di Database
-                const { data, error } = await supabase.from('profiles').select('*').eq('id', id).single();
-                
-                if (error || !data) {
-                    alert("ID Karyawan tidak ditemukan! Silakan hubungi Admin.");
+        // --- 4. FITUR DAFTAR (BARU) ---
+        register: async function() {
+            const name = document.getElementById('reg-name').value;
+            const id = document.getElementById('reg-id').value;
+            const code = document.getElementById('reg-code').value;
+
+            if(!name || !id) {
+                return alert("Mohon isi Nama dan ID Pengguna!");
+            }
+
+            // Tentukan Role
+            let role = 'employee';
+            if (code === 'GMS2024') { 
+                role = 'admin'; 
+            }
+
+            const { error } = await supabase.from('profiles').insert([{
+                id: id, 
+                full_name: name, 
+                role: role
+            }]);
+
+            if (error) {
+                if (error.code === '23505') {
+                    alert("Gagal! ID Pengguna ini sudah terdaftar.");
                 } else {
-                    // Update nama jika berubah di input (opsional)
-                    if(data.full_name !== name) {
-                        await supabase.from('profiles').update({full_name: name}).eq('id', id);
-                        data.full_name = name;
-                    }
-                    this.currentUser = data;
-                    this.currentRole = 'employee';
-                    this.showView('employee');
-                    this.initEmployee();
+                    alert("Terjadi kesalahan: " + error.message);
                 }
-            },
+            } else {
+                alert(`Pendaftaran Berhasil!\nRole: ${role.toUpperCase()}\nSilakan Login.`);
+                document.getElementById('reg-name').value = '';
+                document.getElementById('reg-id').value = '';
+                document.getElementById('reg-code').value = '';
+                this.toggleRegister();
+            }
+        },
 
-            logout: function() {
-                this.currentUser = null;
-                this.currentRole = null;
-                document.getElementById('view-login').classList.remove('hidden');
-                document.getElementById('view-employee').classList.add('hidden');
-                document.getElementById('view-admin').classList.add('hidden');
-            },
+        // --- 5. FITUR KARYAWAN (GPS & CAMERA) ---
+        initEmployee: function() {
+            document.getElementById('emp-name').innerText = this.currentUser.full_name;
+            document.getElementById('emp-id').innerText = this.currentUser.id;
+            document.getElementById('emp-avatar').src = `https://ui-avatars.com/api/?name=${this.currentUser.full_name}`;
+            this.getLocation();
+            this.loadHistory('absen');
+            this.loadHistory('pengajuan');
+        },
 
-            showView: function(viewName) {
-                document.getElementById('view-login').classList.add('hidden');
-                document.getElementById('view-employee').classList.add('hidden');
-                document.getElementById('view-admin').classList.add('hidden');
-                document.getElementById('view-' + viewName).classList.remove('hidden');
-            },
-
-            // --- 2. EMPLOYEE LOGIC ---
-            initEmployee: function() {
-                document.getElementById('emp-name').innerText = this.currentUser.full_name;
-                document.getElementById('emp-id').innerText = this.currentUser.id;
-                document.getElementById('emp-avatar').src = `https://ui-avatars.com/api/?name=${this.currentUser.full_name}`;
-                
-                this.getLocation();
-                this.loadHistory('absen');
-                this.loadHistory('pengajuan');
-            },
-
-            getLocation: function() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.watchPosition((pos) => {
-                        const lat = pos.coords.latitude.toFixed(5);
-                        const lng = pos.coords.longitude.toFixed(5);
-                        document.getElementById('gps-status-text').innerText = "GPS Aktif (Terkunci)";
-                        document.getElementById('gps-status-text').style.color = "var(--success)";
-                        document.getElementById('gps-dot').style.background = "var(--success)";
-                        document.getElementById('gps-coords').innerText = `Lat: ${lat}, Lng: ${lng}`;
-                        this.currentUser.lat = lat;
-                        this.currentUser.lng = lng;
-                    }, (err) => {
-                        document.getElementById('gps-status-text').innerText = "GPS Gagal";
-                        document.getElementById('gps-status-text').style.color = "var(--danger)";
-                    });
-                }
-            },
-
-            openCamera: async function(type) {
-                this.clockActionType = type;
-                const modal = document.getElementById('modal-camera');
-                const video = document.getElementById('camera-feed');
-                modal.style.display = 'flex';
-                
-                try {
-                    this.videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-                    video.srcObject = this.videoStream;
-                } catch(e) {
-                    alert("Gagal akses kamera: " + e.message);
-                    this.closeCamera();
-                }
-            },
-
-            closeCamera: function() {
-                const modal = document.getElementById('modal-camera');
-                modal.style.display = 'none';
-                if(this.videoStream) {
-                    this.videoStream.getTracks().forEach(track => track.stop());
-                }
-            },
-
-            capturePhoto: function() {
-                const video = document.getElementById('camera-feed');
-                const canvas = document.getElementById('camera-canvas');
-                
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                canvas.getContext('2d').drawImage(video, 0, 0);
-                
-                this.photoData = canvas.toDataURL('image/jpeg');
-                this.closeCamera();
-                this.submitAttendance();
-            },
-
-            submitAttendance: async function() {
-                const now = new Date();
-                const address = `Lat:${this.currentUser.lat}, Lng:${this.currentUser.lng}`; // Simplifikasi alamat
-
-                // Upload ke Storage (Opsional, disini kita simpan base64 atau link dummy dulu)
-                // Untuk demo ini, kita simpan record absensi saja
-                
-                const { error } = await supabase.from('attendances').insert([{
-                    user_id: this.currentUser.id,
-                    type: this.clockActionType,
-                    lat: this.currentUser.lat,
-                    lng: this.currentUser.lng,
-                    address: address,
-                    photo_url: 'https://ui-avatars.com/api/?name=Foto', // Placeholder foto
-                    status: 'Hadir'
-                }]);
-
-                if(error) alert("Gagal: " + error.message);
-                else {
-                    alert(`Berhasil ${this.clockActionType}!`);
-                    this.loadHistory('absen');
-                }
-            },
-
-            submitPengajuan: async function() {
-                const type = document.getElementById('sub-type').value;
-                const date = document.getElementById('sub-date').value;
-                const desc = document.getElementById('sub-desc').value;
-
-                if(!date || !desc) return alert("Lengkapi data!");
-
-                await supabase.from('submissions').insert([{
-                    user_id: this.currentUser.id,
-                    type, date_val: date, description: desc
-                }]);
-
-                alert("Pengajuan terkirim!");
-                this.loadHistory('pengajuan');
-                document.getElementById('sub-form').classList.add('hidden');
-            },
-
-            loadHistory: async function(tab) {
-                let data, error;
-                if(tab === 'absen') {
-                    const res = await supabase.from('attendances').select('*').eq('user_id', this.currentUser.id).order('clock_in', { ascending: false });
-                    data = res.data; error = res.error;
-                    const list = document.getElementById('history-list-absen');
-                    list.innerHTML = data.map(item => `
-                        <div class="history-item">
-                            <div class="history-time">
-                                <span>${new Date(item.clock_in).getHours()}:${new Date(item.clock_in).getMinutes()}</span>
-                                <small>${new Date(item.clock_in).toLocaleDateString()}</small>
-                            </div>
-                            <div class="history-content">
-                                <div class="history-status">${item.type} - ${item.status}</div>
-                                <div class="history-loc">📍 ${item.address}</div>
-                            </div>
-                        </div>
-                    `).join('') || '<div style="text-align:center;padding:20px;color:#999">Belum absen hari ini</div>';
-                } else {
-                    const res = await supabase.from('submissions').select('*').eq('user_id', this.currentUser.id).order('id', { ascending: false });
-                    data = res.data; error = res.error;
-                    const list = document.getElementById('history-list-sub');
-                    list.innerHTML = data.map(item => `
-                        <div class="history-item">
-                            <div class="history-time">
-                                <span>${item.type}</span>
-                                <small>${item.date_val}</small>
-                            </div>
-                            <div class="history-content">
-                                <div class="history-status" style="color:${item.status === 'Approved' ? 'green' : 'orange'}">${item.status}</div>
-                                <div>${item.description}</div>
-                            </div>
-                        </div>
-                    `).join('') || '<div style="text-align:center;padding:20px;color:#999">Belum ada pengajuan</div>';
-                }
-            },
-
-            switchHistory: function(tab) {
-                document.getElementById('view-absen').classList.add('hidden');
-                document.getElementById('view-pengajuan').classList.add('hidden');
-                document.getElementById('tab-hist-absen').classList.remove('active');
-                document.getElementById('tab-hist-absen').style.background = 'white';
-                document.getElementById('tab-hist-absen').style.color = 'var(--text-muted)';
-                
-                document.getElementById('tab-hist-sub').classList.remove('active');
-                document.getElementById('tab-hist-sub').style.background = 'white';
-                document.getElementById('tab-hist-sub').style.color = 'var(--text-muted)';
-
-                if(tab === 'absen') {
-                    document.getElementById('view-absen').classList.remove('hidden');
-                    document.getElementById('tab-hist-absen').classList.add('active');
-                    document.getElementById('tab-hist-absen').style.background = 'var(--primary)';
-                    document.getElementById('tab-hist-absen').style.color = 'white';
-                } else {
-                    document.getElementById('view-pengajuan').classList.remove('hidden');
-                    document.getElementById('tab-hist-sub').classList.add('active');
-                    document.getElementById('tab-hist-sub').style.background = 'var(--primary)';
-                    document.getElementById('tab-hist-sub').style.color = 'white';
-                }
-            },
-
-            // --- 3. ADMIN LOGIC ---
-            loadAdminDashboard: async function() {
-                // Stats
-                const { count: totalEmp } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
-                document.getElementById('stat-total').innerText = totalEmp || 0;
-
-                // Load Tables
-                this.loadAdminAttendance();
-                this.loadEmployeeList();
-                this.loadSubmissions();
-            },
-
-            loadAdminAttendance: async function() {
-                const { data } = await supabase.from('attendances').select('*, profiles(full_name)').order('clock_in', { ascending: false }).limit(50);
-                const tbody = document.querySelector('#admin-att-table tbody');
-                tbody.innerHTML = data.map(row => `
-                    <tr>
-                        <td>${new Date(row.clock_in).toLocaleString()}</td>
-                        <td>${row.profiles.full_name}</td>
-                        <td>${row.type}</td>
-                        <td>${row.lat ? row.lat.toFixed(4) : '-'}</td>
-                        <td><span class="badge" style="background:${row.type==='Masuk'?'#d1fae5':'#fee2e2'}; padding:2px 8px; border-radius:4px; font-size:0.8rem">${row.status}</span></td>
-                    </tr>
-                `).join('');
-            },
-
-            loadEmployeeList: async function() {
-                const { data } = await supabase.from('profiles').select('*').neq('role', 'admin');
-                const tbody = document.querySelector('#emp-table tbody');
-                tbody.innerHTML = data.map(row => `
-                    <tr>
-                        <td>${row.id}</td>
-                        <td>${row.full_name}</td>
-                        <td>${row.role}</td>
-                    </tr>
-                `).join('');
-            },
-
-            addEmployee: async function() {
-                const id = document.getElementById('new-emp-id').value;
-                const name = document.getElementById('new-emp-name').value;
-                if(!id || !name) return alert("Isi data!");
-
-                await supabase.from('profiles').insert([{ id, full_name: name, role: 'employee' }]);
-                alert("Karyawan ditambahkan!");
-                this.loadEmployeeList();
-                document.getElementById('new-emp-id').value = '';
-                document.getElementById('new-emp-name').value = ''
-            },
-
-                        // Tambahkan fungsi ini di dalam const app = { ... }
-            
-            // Fitur Import CSV
-            importEmployees: function() {
-                const fileInput = document.getElementById('import-file');
-                const file = fileInput.files[0];
-
-                if (!file) {
-                    return alert("Pilih file CSV terlebih dahulu!");
-                }
-
-                // Menggunakan library PapaParse (sudah include di head HTML Anda)
-                Papa.parse(file, {
-                    header: false, // Kita baca array biasa [ID, Nama]
-                    skipEmptyLines: true,
-                    complete: async function(results) {
-                        const rows = results.data;
-                        let successCount = 0;
-                        let errorCount = 0;
-
-                        for (let i = 0; i < rows.length; i++) {
-                            // Asumsi format CSV: Kolom 0 = ID, Kolom 1 = Nama
-                            const empId = rows[i][0];
-                            const empName = rows[i][1];
-
-                            if (empId && empName) {
-                                const { error } = await supabase.from('profiles').insert([{
-                                    id: empId,
-                                    full_name: empName,
-                                    role: 'employee'
-                                }]);
-                                
-                                if (error) {
-                                    errorCount++;
-                                    console.error("Gagal import: " + empId, error);
-                                } else {
-                                    successCount++;
-                                }
-                            }
-                        }
-
-                        alert(`Import Selesai!\nBerhasil: ${successCount}\nGagal/Duplikat: ${errorCount}`);
-                        app.loadEmployeeList(); // Refresh tabel
-                        fileInput.value = ""; // Reset input
-                    }
+        getLocation: function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition((pos) => {
+                    const lat = pos.coords.latitude.toFixed(5);
+                    const lng = pos.coords.longitude.toFixed(5);
+                    document.getElementById('gps-status-text').innerText = "GPS Aktif (Terkunci)";
+                    document.getElementById('gps-status-text').style.color = "var(--success)";
+                    document.getElementById('gps-dot').style.background = "var(--success)";
+                    document.getElementById('gps-coords').innerText = `Lat: ${lat}, Lng: ${lng}`;
+                    this.currentUser.lat = lat;
+                    this.currentUser.lng = lng;
+                }, (err) => {
+                    document.getElementById('gps-status-text').innerText = "GPS Gagal";
+                    document.getElementById('gps-status-text').style.color = "var(--danger)";
                 });
-            },
+            }
+        },
 
-            loadSubmissions: async function() {
-                const { data } = await supabase.from('submissions').select('*, profiles(full_name)').eq('status', 'Pending');
-                const list = document.getElementById('admin-sub-list');
+        openCamera: async function(type) {
+            this.clockActionType = type;
+            const modal = document.getElementById('modal-camera');
+            const video = document.getElementById('camera-feed');
+            modal.style.display = 'flex';
+            
+            try {
+                this.videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                video.srcObject = this.videoStream;
+            } catch(e) {
+                alert("Gagal akses kamera: " + e.message);
+                this.closeCamera();
+            }
+        },
+
+        closeCamera: function() {
+            const modal = document.getElementById('modal-camera');
+            modal.style.display = 'none';
+            if(this.videoStream) {
+                this.videoStream.getTracks().forEach(track => track.stop());
+            }
+        },
+
+        capturePhoto: function() {
+            const video = document.getElementById('camera-feed');
+            const canvas = document.getElementById('camera-canvas');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            
+            this.photoData = canvas.toDataURL('image/jpeg');
+            this.closeCamera();
+            this.submitAttendance();
+        },
+
+        submitAttendance: async function() {
+            const address = `Lat:${this.currentUser.lat}, Lng:${this.currentUser.lng}`;
+
+            const { error } = await supabase.from('attendances').insert([{
+                user_id: this.currentUser.id,
+                type: this.clockActionType,
+                lat: this.currentUser.lat,
+                lng: this.currentUser.lng,
+                address: address,
+                photo_url: 'https://ui-avatars.com/api/?name=Foto',
+                status: 'Hadir'
+            }]);
+
+            if(error) alert("Gagal: " + error.message);
+            else {
+                alert(`Berhasil ${this.clockActionType}!`);
+                this.loadHistory('absen');
+            }
+        },
+
+        submitPengajuan: async function() {
+            const type = document.getElementById('sub-type').value;
+            const date = document.getElementById('sub-date').value;
+            const desc = document.getElementById('sub-desc').value;
+
+            if(!date || !desc) return alert("Lengkapi data!");
+
+            await supabase.from('submissions').insert([{
+                user_id: this.currentUser.id,
+                type, date_val: date, description: desc
+            }]);
+
+            alert("Pengajuan terkirim!");
+            this.loadHistory('pengajuan');
+            document.getElementById('sub-form').classList.add('hidden');
+        },
+
+        loadHistory: async function(tab) {
+            let data, error;
+            if(tab === 'absen') {
+                const res = await supabase.from('attendances').select('*').eq('user_id', this.currentUser.id).order('clock_in', { ascending: false });
+                data = res.data; error = res.error;
+                const list = document.getElementById('history-list-absen');
                 list.innerHTML = data.map(item => `
-                    <div class="card" style="padding:15px; border-left: 4px solid var(--warning);">
-                        <strong>${item.profiles.full_name}</strong> (${item.type}) - ${item.date_val}<br>
-                        <small>${item.description}</small><br>
-                        <div style="margin-top:5px;">
-                            <button onclick="app.approveSub(${item.id})" class="btn btn-sm btn-success">Setuju</button>
-                            <button onclick="app.rejectSub(${item.id})" class="btn btn-sm btn-danger">Tolak</button>
+                    <div class="history-item">
+                        <div class="history-time">
+                            <span>${new Date(item.clock_in).getHours()}:${new Date(item.clock_in).getMinutes()}</span>
+                            <small>${new Date(item.clock_in).toLocaleDateString()}</small>
+                        </div>
+                        <div class="history-content">
+                            <div class="history-status">${item.type} - ${item.status}</div>
+                            <div class="history-loc">📍 ${item.address}</div>
                         </div>
                     </div>
-                `).join('') || '<p style="text-align:center">Tidak ada pending.</p>';
-            },
-
-            approveSub: async function(id) {
-                await supabase.from('submissions').update({ status: 'Approved' }).eq('id', id);
-                this.loadSubmissions();
-            },
-
-            rejectSub: async function(id) {
-                await supabase.from('submissions').update({ status: 'Rejected' }).eq('id', id);
-                this.loadSubmissions();
-            },
-
-            switchAdminTab: function(tab, el) {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                el.classList.add('active');
-                
-                document.getElementById('tab-attendance').classList.add('hidden');
-                document.getElementById('tab-employees').classList.add('hidden');
-                document.getElementById('tab-submissions').classList.add('hidden');
-                
-                document.getElementById('tab-' + tab).classList.remove('hidden');
-            },
-
-            exportExcel: function() {
-                const table = document.getElementById('admin-att-table');
-                const wb = XLSX.utils.table_to_book(table, {sheet: "Sheet 1"});
-                XLSX.writeFile(wb, 'Rekap_Absensi_GMS.xlsx');
+                `).join('') || '<div style="text-align:center;padding:20px;color:#999">Belum absen hari ini</div>';
+            } else {
+                const res = await supabase.from('submissions').select('*').eq('user_id', this.currentUser.id).order('id', { ascending: false });
+                data = res.data; error = res.error;
+                const list = document.getElementById('history-list-sub');
+                list.innerHTML = data.map(item => `
+                    <div class="history-item">
+                        <div class="history-time">
+                            <span>${item.type}</span>
+                            <small>${item.date_val}</small>
+                        </div>
+                        <div class="history-content">
+                            <div class="history-status" style="color:${item.status === 'Approved' ? 'green' : 'orange'}">${item.status}</div>
+                            <div>${item.description}</div>
+                        </div>
+                    </div>
+                `).join('') || '<div style="text-align:center;padding:20px;color:#999">Belum ada pengajuan</div>';
             }
-        };
-    </script>
+        },
+
+        switchHistory: function(tab) {
+            document.getElementById('view-absen').classList.add('hidden');
+            document.getElementById('view-pengajuan').classList.add('hidden');
+            document.getElementById('tab-hist-absen').classList.remove('active');
+            document.getElementById('tab-hist-absen').style.background = 'white';
+            document.getElementById('tab-hist-absen').style.color = 'var(--text-muted)';
+            
+            document.getElementById('tab-hist-sub').classList.remove('active');
+            document.getElementById('tab-hist-sub').style.background = 'white';
+            document.getElementById('tab-hist-sub').style.color = 'var(--text-muted)';
+
+            if(tab === 'absen') {
+                document.getElementById('view-absen').classList.remove('hidden');
+                document.getElementById('tab-hist-absen').classList.add('active');
+                document.getElementById('tab-hist-absen').style.background = 'var(--primary)';
+                document.getElementById('tab-hist-absen').style.color = 'white';
+            } else {
+                document.getElementById('view-pengajuan').classList.remove('hidden');
+                document.getElementById('tab-hist-sub').classList.add('active');
+                document.getElementById('tab-hist-sub').style.background = 'var(--primary)';
+                document.getElementById('tab-hist-sub').style.color = 'white';
+            }
+        },
+
+        // --- 6. ADMIN LOGIC ---
+        loadAdminDashboard: async function() {
+            const { count: totalEmp } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
+            document.getElementById('stat-total').innerText = totalEmp || 0;
+            this.loadAdminAttendance();
+            this.loadEmployeeList();
+            this.loadSubmissions();
+        },
+
+        loadAdminAttendance: async function() {
+            const { data } = await supabase.from('attendances').select('*, profiles(full_name)').order('clock_in', { ascending: false }).limit(50);
+            const tbody = document.querySelector('#admin-att-table tbody');
+            tbody.innerHTML = data.map(row => `
+                <tr>
+                    <td>${new Date(row.clock_in).toLocaleString()}</td>
+                    <td>${row.profiles.full_name}</td>
+                    <td>${row.type}</td>
+                    <td>${row.lat ? row.lat.toFixed(4) : '-'}</td>
+                    <td><span style="background:${row.type==='Masuk'?'#d1fae5':'#fee2e2'}; padding:2px 8px; border-radius:4px; font-size:0.8rem">${row.status}</span></td>
+                </tr>
+            `).join('');
+        },
+
+        loadEmployeeList: async function() {
+            const { data } = await supabase.from('profiles').select('*').neq('role', 'admin');
+            const tbody = document.querySelector('#emp-table tbody');
+            tbody.innerHTML = data.map(row => `
+                <tr>
+                    <td>${row.id}</td>
+                    <td>${row.full_name}</td>
+                    <td>${row.role}</td>
+                </tr>
+            `).join('');
+        },
+
+        addEmployee: async function() {
+            const id = document.getElementById('new-emp-id').value;
+            const name = document.getElementById('new-emp-name').value;
+            if(!id || !name) return alert("Isi data!");
+
+            await supabase.from('profiles').insert([{ id, full_name: name, role: 'employee' }]);
+            alert("Karyawan ditambahkan!");
+            this.loadEmployeeList();
+            document.getElementById('new-emp-id').value = '';
+            document.getElementById('new-emp-name').value = '';
+        },
+
+        loadSubmissions: async function() {
+            const { data } = await supabase.from('submissions').select('*, profiles(full_name)').eq('status', 'Pending');
+            const list = document.getElementById('admin-sub-list');
+            list.innerHTML = data.map(item => `
+                <div class="card" style="padding:15px; border-left: 4px solid var(--warning);">
+                    <strong>${item.profiles.full_name}</strong> (${item.type}) - ${item.date_val}<br>
+                    <small>${item.description}</small><br>
+                    <div style="margin-top:5px;">
+                        <button onclick="app.approveSub(${item.id})" class="btn btn-sm btn-success">Setuju</button>
+                        <button onclick="app.rejectSub(${item.id})" class="btn btn-sm btn-danger">Tolak</button>
+                    </div>
+                </div>
+            `).join('') || '<p style="text-align:center">Tidak ada pending.</p>';
+        },
+
+        approveSub: async function(id) {
+            await supabase.from('submissions').update({ status: 'Approved' }).eq('id', id);
+            this.loadSubmissions();
+        },
+
+        rejectSub: async function(id) {
+            await supabase.from('submissions').update({ status: 'Rejected' }).eq('id', id);
+            this.loadSubmissions();
+        },
+
+        switchAdminTab: function(tab, el) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            
+            document.getElementById('tab-attendance').classList.add('hidden');
+            document.getElementById('tab-employees').classList.add('hidden');
+            document.getElementById('tab-submissions').classList.add('hidden');
+            
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+        },
+
+        exportExcel: function() {
+            const table = document.getElementById('admin-att-table');
+            const wb = XLSX.utils.table_to_book(table, {sheet: "Sheet 1"});
+            XLSX.writeFile(wb, 'Rekap_Absensi_GMS.xlsx');
+        }
+    };
+   </script>
 </body>
 </html>
-
+                
 
 
